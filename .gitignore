@@ -1,0 +1,46 @@
+###############################################################################
+# Author: Graeme Douglas
+# Things for git to ignore.
+# 
+# Note: If you really want to add something to git, simply git add -f <file>
+###############################################################################
+
+## Example database files
+fruit_stock_1
+fruit_stock_2
+db_dummy
+
+## All binary directories
+bin/
+
+## In general, ignore html/latex folders in doxygen directory.
+doc/doxygen/html
+doc/doxygen/latex
+
+## Ignore contikified directory.  Will force add generation script.
+contikify
+
+## Ignore annoying eclipse files for those of us that use such software.
+.settings
+.project
+
+## Ignore contiki example dir, except what I force add.
+contiki_ex
+
+## General Files
+# Compiled files
+*~
+*.com
+*class
+*.dll
+*.exe
+*.so
+*.o
+# Annoying OS files
+.DS_Store*
+Icon?
+ethumbs.db
+Thumbs.db
+*bak
+# Annoying vim files
+*.swp
