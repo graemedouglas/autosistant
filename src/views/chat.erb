@@ -1,0 +1,51 @@
+<%#
+Author:			Graeme Douglas
+Create date/time:	2012/09/29/16:00
+Create date/time:	2012/09/29/17:08
+
+The chat client page. Targets HTML5.
+%>
+<% require './config.rb'%>
+
+<html lang = "en">
+<head>
+<title> <%=CompanyName%> | autosistant </title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"
+	type="text/javascript"></script>
+<script>
+// AJAX code to send and receive chat messages.
+$(document).ready(function(){
+ $("#ajaxsend").click(function(){
+  $.ajax({
+   type: 'POST',
+   url: '/autosistant-ajax',
+   data: {id: '0', message: $('textarea#message').val() },
+   beforeSend:function(){
+     // Notify user about something that we waiting for a reply.
+   },
+   success:function(data){
+     // AJAX request made succesfully!
+     $('#chatarea').append("\n"+data);
+     $('#message').attr('value', '');
+   },
+   error:function(){
+     // AJAX Request failed!
+     $('#chatarea').append("\n\n AJAX FAILURE.  Send the message again!");
+   }
+  })
+ })
+});
+</script>
+</head>
+<body>
+<h1> <%=CompanyName%> | autosistant Chat Client </h1>
+<textarea name="chatarea" id="chatarea" readonly="readonly" rows="20" cols="90">
+Hello, my name is Hank and I will be your assistant today.  How can I help you?
+</textarea>
+<form id="chatform" action="">
+<textarea name="message" id="message" rows="5" cols="90"
+	placeholder="Type your message here!">
+</textarea></br>
+<button type="button" id="ajaxsend">Send Message!</button>
+</form>
+</body>

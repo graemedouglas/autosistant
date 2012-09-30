@@ -1,0 +1,21 @@
+A place to log all of my thoughts, decisions, ideas, bugs, problems, etc.
+================================================================================
+
+Author:			Graeme Douglas
+Date created:		2012/09/29
+
+--------------------------------------------------------------------------------
+Quick guide to this file:
+[g]: A general item.
+[d]: A decision.  Must have a reason.
+[i]: Idea.
+[t]: Important task reminder, either TODO or otherwise.
+[bd]: A bug has been discovered. Should state what it is.
+[bf]: A bug has been fixed.  State date and item number for date in this log.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+2012/09/29
+-[G] Started basic code for project.  Wrote basic chat client page, routes.
+--------------------------------------------------------------------------------
+
