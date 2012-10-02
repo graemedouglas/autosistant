@@ -1,0 +1,49 @@
+Actions
+	Check stock/price
+		"cost"
+		"stock"
+		"how much"
+		"looking"
+		"want"
+	Add item to purchase
+		"add"
+		"buy"
+		"purchase"
+		"take"
+	Clear/abort session
+		"goodbye"
+		"abort"
+	Save session long term
+		"later"
+	Summarize session so far
+		"summarize"
+		"overview"
+	Place order
+		--Handle directly when no more tasks
+	
+Databases
+	Configuration
+		-options
+			-rowid			// option id
+			-key(TEXT)		// option key
+			-value(TEXT)		// option value
+		-actionphrases
+			-rowid			// Phrase id
+			-phrase(/TEXT)		// phrase text
+			-aid			// action id this phrase maps to
+		-actions
+			-rowid			// action id
+			-description		// action description
+		-identifiercategories		// lists ways to identify products
+			-rowid			// category id
+			-name			// category name
+		-product
+			-rowid			// product id
+			-name			// product name
+			-price			// product price
+			-qty			// product quantity
+		-productidentifiers
+			-rowid			// row id
+			-pid			// product id to identify
+			-iid			// identifier category id
+			-value(TEXT)		// value of the identifier
