@@ -29,11 +29,12 @@ Databases
 			-value(TEXT)		// option value
 		-actionphrases
 			-rowid			// Phrase id
-			-phrase(/TEXT)		// phrase text
+			-phrase(TEXT)		// phrase text
 			-aid			// action id this phrase maps to
 		-actions
 			-rowid			// action id
 			-description		// action description
+	Product
 		-identifiercategories		// lists ways to identify products
 			-rowid			// category id
 			-name			// category name
@@ -45,5 +46,48 @@ Databases
 		-productidentifiers
 			-rowid			// row id
 			-pid			// product id to identify
-			-iid			// identifier category id
+			-icid			// identifier category id
 			-value(TEXT)		// value of the identifier
+
+Queries
+-Get all action words
+"SELECT * FROM actionphrases"
+-Get All categories so we can filter.
+"
+SELECT id, name FROM identifiercategories
+"
+-Determine if we have filtered enough
+"
+SELECT COUNT(DISTINCT product.id)
+FROM identifiercategories IC, productidentifiers PI
+WHERE IC.ROWID = PI.icid AND {IC.name = <p> AND PI.value = <p> AND [OR ... (repeat for different category)]}
+"
+-Once we have filtered enough, get the lone result.`
+"
+SELECT P.*
+FROM identifiercategories IC, productidentifiers PI, product p
+WHERE PI.pid = P.ROWID IC.ROWID = PI.icid AND {IC.name = <p> AND PI.value = <p> AND [OR ... (repeat for different category)]}
+"
+
+Other code
+	Input splitting:
+		"This, is, a, cool test.  Do you think so?".split(/[\s,.?!;:]+/)
+	Task
+		-isGlobal?: Boolean
+		-id: Integer
+		-item
+			-either
+				-list of tasks
+				-specific thing to do
+	UserConversation
+		-task list
+		-information hash: looks roughly like
+			h[:global] = hash
+			h[0] = hash
+			... and so on ...
+	dotask(taskList L)
+		-t = highest priority task
+		-if (t.item is a list)
+			dotask(t.item)
+		-else
+			carry out t.item
