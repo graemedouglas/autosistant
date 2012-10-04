@@ -16,6 +16,13 @@ if (DEBUG_ON)
 end
 ################################################################################
 
+### Helpers ####################################################################
+helpers do
+	include Rack::Utils
+	alias_method :h, :escape_html
+end
+################################################################################
+
 ### Routes #####################################################################
 get '/' do
 	"Hello, World"
@@ -26,7 +33,7 @@ get '/autosistant' do
 end
 
 post '/autosistant-ajax' do
-	"Message received! You sent: \"#{params[:message]}\""
+	"Message received! You sent: \"#{h(params[:message])}\""
 end
 
 get '/about' do

@@ -62,7 +62,7 @@ SELECT COUNT(DISTINCT product.id)
 FROM identifiercategories IC, productidentifiers PI
 WHERE IC.ROWID = PI.icid AND {IC.name = <p> AND PI.value = <p> AND [OR ... (repeat for different category)]}
 "
--Once we have filtered enough, get the lone result.`
+-Once we have filtered enough, get the lone result.
 "
 SELECT P.*
 FROM identifiercategories IC, productidentifiers PI, product p
@@ -85,9 +85,24 @@ Other code
 			h[:global] = hash
 			h[0] = hash
 			... and so on ...
+		-purchaseList: List of things to purchase
 	dotask(taskList L)
 		-t = highest priority task
 		-if (t.item is a list)
 			dotask(t.item)
 		-else
 			carry out t.item
+	identifyproduct(UserSession session)
+		-while product not identified
+			-choose another identifier class to get information for
+		-if no product chosen
+			return some error
+		-if atleast one product
+			offer options
+
+IdentifierCategories
+	-year
+	-make
+	-model
+	-option
+	-called
