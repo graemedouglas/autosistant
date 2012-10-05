@@ -5,10 +5,8 @@
 # Note: If you really want to add something to git, simply git add -f <file>
 ###############################################################################
 
-## Example database files
-fruit_stock_1
-fruit_stock_2
-db_dummy
+## Ignore all .db files.
+*.db
 
 ## All binary directories
 bin/
@@ -17,15 +15,9 @@ bin/
 doc/doxygen/html
 doc/doxygen/latex
 
-## Ignore contikified directory.  Will force add generation script.
-contikify
-
 ## Ignore annoying eclipse files for those of us that use such software.
 .settings
 .project
-
-## Ignore contiki example dir, except what I force add.
-contiki_ex
 
 ## General Files
 # Compiled files
