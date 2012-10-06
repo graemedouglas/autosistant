@@ -41,14 +41,17 @@ end
 def processRequest(params)
 	# Set a flag so that we execute the correct query later on.
 	fromDB = false
+	
 	# Get the user id.
 	uid = params[:uid]
 	
 	# Create or retrieve the user object.
 	user = nil
 	if uid == "-1"
+		# Must create new user object.
 		user = User.new
 		result = 1
+		
 		# Ensure we generate a unique uuid.
 		until result == 0
 			uid = SecureRandom.uuid
@@ -57,9 +60,11 @@ def processRequest(params)
 			result = result[0]["count"]
 		end
 	else
+		# Get the user object from the database.
 		fromDB = true
 		user = UserStoreDB.execute("SELECT serialized FROM userstore"+
 						" WHERE uid = ?;", uid)
+		# Unserialize it.
 		user = YAML.load(user[0]['serialized'])
 	end
 	
@@ -77,8 +82,6 @@ def processRequest(params)
 	
 	# Return the user id, new message.
 	return uid, ""
-=begin
-=end
 	
 end
 ################################################################################
