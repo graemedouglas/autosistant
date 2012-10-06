@@ -25,7 +25,7 @@ IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
 require './config.rb'		# System wide configuration options
 require './tasks.rb'		# System tasks code.
 require './users.rb'		# User session code.
-if (DEBUG_ON)
+if DEBUG_ON
 	require 'shotgun'	# Restart server on each page refresh
 end
 ################################################################################
@@ -39,9 +39,12 @@ end
 
 ### Functions ##################################################################
 def processRequest(params)
+	# Set a flag so that we execute the correct query later on.
 	fromDB = false
 	# Get the user id.
 	uid = params[:uid]
+	
+	# Create or retrieve the user object.
 	user = nil
 	if uid == "-1"
 		user = User.new
@@ -59,9 +62,11 @@ def processRequest(params)
 						" WHERE uid = ?;", uid)
 		user = YAML.load(user[0]['serialized'])
 	end
-	# Split the words.
-	words = params[:message].split(/[\s,.?!;:]+/);
 	
+	# Split the words.
+	words = params[:message].split(/[\s,.?!;:]+/)
+	
+	# Insert/update serialized user object, as needed.
 	if fromDB
 		UserStoreDB.execute("UPDATE userstore SET serialized=? WHERE"+
 					" uid=?;", user.to_yaml, uid)
@@ -69,6 +74,7 @@ def processRequest(params)
 		UserStoreDB.execute("INSERT INTO userstore (uid, serialized)"+
 					" VALUES (?, ?)", uid, user.to_yaml)
 	end
+	
 	# Return the user id, new message.
 	return uid, ""
 =begin

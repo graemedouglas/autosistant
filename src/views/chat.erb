@@ -26,7 +26,8 @@ $(document).ready(function(){
   $.ajax({
    type: 'POST',
    url: '/autosistant-ajax',
-   data: {uid: $('input#userid').val(), message: $('textarea#message').val() },
+   data: {uid: $('input#userid').val(), message: $('textarea#message').val()
+    .replace(/\n/g, ' ') },
    beforeSend:function(){
      // Notify user about something that we waiting for a reply.
    },
