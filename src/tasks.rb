@@ -6,7 +6,8 @@
 
 ### Classes ####################################################################
 class Task
-	attr_accessor
+	attr_accessor :priority
+	attr_accessor :item
 	
 	### Variables
 	@priority	# Task priority.
