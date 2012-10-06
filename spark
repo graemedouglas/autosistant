@@ -101,8 +101,15 @@ Other code
 			offer options
 
 IdentifierCategories
+	-called
 	-year
 	-make
 	-model
 	-option
-	-called
+Tasks
+	-Identify(Check stock/price)
+	-AskAddToPurchaseList
+	-AbortPurchase
+	-ReconnectSession
+	-Checkout
+	-

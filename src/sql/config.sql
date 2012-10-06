@@ -22,18 +22,21 @@ CREATE TABLE actionphrases
 	phrase TEXT,
 	aid INTEGER,
 	FOREIGN KEY(aid) REFERENCES actions(id)
+	UNIQUE (phrase)
 );
 
 CREATE TABLE identifiercategories
 (
 	id INTEGER PRIMARY KEY,
-	name TEXT
+	name TEXT,
+	question TEXT,
+	UNIQUE (name)
 );
 
 CREATE TABLE productidentifiers
 (
 	id INTEGER PRIMARY KEY,
-	pid INTEGER,	-- This needs to reference the product id from product table
+	pid INTEGER,	-- This needs to reference the id field of product table
 	icid INTEGER,
 	value TEXT,
 	FOREIGN KEY(icid) REFERENCES identifiercategories(id)

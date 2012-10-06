@@ -9,8 +9,22 @@
 ### Requirements ###############################################################
 require 'rubygems'		# For Ruby version < 1.9
 require 'sinatra'		# Webframework to use
+require 'yaml'			# Required for serializing objects.
+require 'sqlite3'		# Require the database module we will use.
+ConfigDB = SQLite3::Database.new('sqlite/config.db')
+ProductDB = SQLite3::Database.new('sqlite/product.db')
+UserStoreDB = SQLite3::Database.new('sqlite/userstore.db')
+ConfigDB.results_as_hash = true
+ProductDB.results_as_hash = true
+UserStoreDB.results_as_hash = true
 
+# Do some initial queries.
+Actions = ConfigDB.execute("SELECT * FROM actions;")
+ActionPhrases = ConfigDB.execute("SELECT * FROM actionphrases;")
+IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
 require './config.rb'		# System wide configuration options
+require './tasks.rb'		# System tasks code.
+require './users.rb'		# User session code.
 if (DEBUG_ON)
 	require 'shotgun'	# Restart server on each page refresh
 end
@@ -24,10 +38,53 @@ end
 ################################################################################
 
 ### Functions ##################################################################
-
+def processRequest(params)
+	fromDB = false
+	# Get the user id.
+	uid = params[:uid]
+	user = nil
+	if uid == "-1"
+		user = User.new
+		result = 1
+		# Ensure we generate a unique uuid.
+		until result == 0
+			uid = SecureRandom.uuid
+			result = UserStoreDB.execute("SELECT COUNT(*) as count"+
+					" FROM userstore WHERE uid = ?;", uid)
+			result = result[0]["count"]
+		end
+	else
+		fromDB = true
+		user = UserStoreDB.execute("SELECT serialized FROM userstore"+
+						" WHERE uid = ?;", uid)
+		user = YAML.load(user[0]['serialized'])
+	end
+	# Split the words.
+	words = params[:message].split(/[\s,.?!;:]+/);
+	
+	if fromDB
+		UserStoreDB.execute("UPDATE userstore SET serialized=? WHERE"+
+					" uid=?;", user.to_yaml, uid)
+	else
+		UserStoreDB.execute("INSERT INTO userstore (uid, serialized)"+
+					" VALUES (?, ?)", uid, user.to_yaml)
+	end
+	# Return the user id, new message.
+	return uid, ""
+=begin
+=end
+	
+end
 ################################################################################
 
 ### Routes #####################################################################
+before do
+	if DEBUG_ON
+		puts '[Params]'
+		p params
+	end
+end
+
 get '/' do
 	"Hello, World"
 end
@@ -37,7 +94,8 @@ get '/autosistant' do
 end
 
 post '/autosistant-ajax' do
-	"{\n\t\"uid\":\"7\",\n\t\"message\":\"#{h(params[:message])}\"\n}"
+	uid, message = processRequest(params)
+	"{\n\t\"uid\":\"#{uid}\",\n\t\"message\":\"#{h(params[:message])}\"\n}"
 end
 
 get '/about' do
