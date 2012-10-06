@@ -19,13 +19,19 @@ $(document).ready(function(){
   $.ajax({
    type: 'POST',
    url: '/autosistant-ajax',
-   data: {id: '0', message: $('textarea#message').val() },
+   data: {uid: $('input#userid').val(), message: $('textarea#message').val() },
    beforeSend:function(){
      // Notify user about something that we waiting for a reply.
    },
    success:function(data){
      // AJAX request made succesfully!
-     $('#chatarea').append("\n"+data);
+     // Parse the JSON message.
+     var parsed = $.parseJSON(data);
+     // Add the message.
+     $('#chatarea').append("\n"+parsed.message);
+     // Set the userid.
+     $('input#userid').attr('value', parsed.uid);
+     // Clear the message area.
      $('#message').attr('value', '');
    },
    error:function(){
@@ -46,6 +52,7 @@ Hello, my name is Hank and I will be your assistant today.  How can I help you?
 <textarea name="message" id="message" rows="5" cols="90"
 	placeholder="Type your message here!">
 </textarea></br>
+<input type="hidden" name="userid" id="userid" value="-1">
 <button type="button" id="ajaxsend">Send Message!</button>
 </form>
 </body>
