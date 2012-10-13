@@ -4,10 +4,12 @@
 class Task
 	attr_accessor :priority
 	attr_accessor :item
+	attr_accessor :info
 	
 	### Variables
 	@priority	# Task priority.
-	@item		# Either the task itself or a list of tasks to complete.
+	@item		# Either a proc or a list of Tasks to complete.
+	@info		# Contains information specific to this task.
 	
 	### Methods
 	def initialize()
@@ -36,7 +38,7 @@ class User
 		if !t.kind_of?(Task)
 		else
 			# Get insert index. See classmods for this method.
-			insertAt = @tasks.bsearch_lte_idex
+			insertAt = @tasks.bsearch_lte_idx
 			# Add the item.
 			@tasks.insert(insertAt, t)
 		end
@@ -44,12 +46,9 @@ class User
 	def nextTask()
 		@tasks[0]
 	end
-	def doTask(t)
-		if t == nil
-			t = self.nextTask
-		end
+	def doTask(t=self.nextTask)
 		if t.item.kind_of?(Array)
-			self.doTask(t)
+			self.doTask(t.item)
 		else
 			# Do the task!
 		end
@@ -74,4 +73,3 @@ class Array
 	end
 end
 ################################################################################
-
