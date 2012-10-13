@@ -11,20 +11,9 @@ require 'rubygems'		# For Ruby version < 1.9
 require 'sinatra'		# Webframework to use
 require 'yaml'			# Required for serializing objects.
 require 'sqlite3'		# Require the database module we will use.
-ConfigDB = SQLite3::Database.new('sqlite/config.db')
-ProductDB = SQLite3::Database.new('sqlite/product.db')
-UserStoreDB = SQLite3::Database.new('sqlite/userstore.db')
-ConfigDB.results_as_hash = true
-ProductDB.results_as_hash = true
-UserStoreDB.results_as_hash = true
-
-# Do some initial queries.
-Actions = ConfigDB.execute("SELECT * FROM actions;")
-ActionPhrases = ConfigDB.execute("SELECT * FROM actionphrases;")
-IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
 require './config.rb'		# System wide configuration options
-require './tasks.rb'		# System tasks code.
-require './users.rb'		# User session code.
+require './classes.rb'		# System tasks code.
+
 if DEBUG_ON
 	require 'shotgun'	# Restart server on each page refresh
 end
@@ -65,6 +54,7 @@ def processRequest(params)
 		user = UserStoreDB.execute("SELECT serialized FROM userstore"+
 						" WHERE uid = ?;", uid)
 		# Unserialize it.
+		# TODO: handle case where UID is not in DB.
 		user = YAML.load(user[0]['serialized'])
 	end
 	

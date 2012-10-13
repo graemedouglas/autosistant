@@ -1,15 +1,20 @@
-################################################################################
-# Author:		Graeme Douglas
-##
-# Code and logic for user interation.
-################################################################################
-
-### Requirements ###############################################################
-require './classmods.rb'
-require './tasks.rb'
-################################################################################
 
 ### Classes ####################################################################
+### Task ###
+class Task
+	attr_accessor :priority
+	attr_accessor :item
+	
+	### Variables
+	@priority	# Task priority.
+	@item		# Either the task itself or a list of tasks to complete.
+	
+	### Methods
+	def initialize()
+	end
+end
+
+### User ###
 class User
 	attr_accessor :id
 	attr_accessor :info
@@ -48,6 +53,24 @@ class User
 		else
 			# Do the task!
 		end
+	end
+end
+
+### Array Modifications ###
+class Array
+	# Returns index of last element less or equal to value.  Assumes sorted.
+	def binsearch_lte_idx(value, imin=0, imax=self.length)
+		toret = 0
+		while imax > imin or (imax == imin and toret == -1) 
+			idx = ((imin+imax) / 2).to_i
+			if self[idx] <= value
+				toret = imin
+				imin = idx + 1
+			elsif self[idx] > value
+				imax = idx - 1
+			end
+		end
+		return toret
 	end
 end
 ################################################################################
