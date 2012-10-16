@@ -60,6 +60,19 @@ def processRequest(params)
 	
 	# Split the words.
 	words = params[:message].split(/[\s,.?!;:]+/)
+	# Now we process the words.  We want to seperate action words from rest.
+	awords = []
+	# Bad thing about this is that we only add each action once.  Not sure
+	# if that is bad or not.
+	ActionPhrases.each |row| do
+		if words.include? row["phrase"]
+			awords << row["phrase"]
+			words.delete(row["phrase"])
+		end
+	end
+	
+	# Perform the next task.
+	# TODO: Implement here.
 	
 	# Insert/update serialized user object, as needed.
 	if fromDB

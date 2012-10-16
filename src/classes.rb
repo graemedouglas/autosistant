@@ -34,11 +34,26 @@ class User
 	def to_s
 		"id: #{id}"
 	end
+	def searchtask_lte(value)
+		imin = 0
+		imax = self.length - 1
+		toret = -1
+		while imax >= imin
+			idx = ((imin+imax) / 2).to_i
+			if self.tasks[idx].priority <= value
+				toret = idx
+				imin = idx + 1
+			elsif self.tasks[idx].priority > value
+				imax = idx - 1
+			end
+		end
+		return toret
+	end
 	def addTask(t)
 		if !t.kind_of?(Task)
 		else
 			# Get insert index. See classmods for this method.
-			insertAt = @tasks.bsearch_lte_idx
+			insertAt = @tasks.searchtasks_lte(t.priority) + 1
 			# Add the item.
 			@tasks.insert(insertAt, t)
 		end
@@ -58,12 +73,14 @@ end
 ### Array Modifications ###
 class Array
 	# Returns index of last element less or equal to value.  Assumes sorted.
-	def binsearch_lte_idx(value, imin=0, imax=self.length)
-		toret = 0
-		while imax > imin or (imax == imin and toret == -1) 
+	def binsearch_lte_idx(value)
+		imin = 0
+		imax = self.length - 1
+		toret = -1
+		while imax >= imin
 			idx = ((imin+imax) / 2).to_i
 			if self[idx] <= value
-				toret = imin
+				toret = idx
 				imin = idx + 1
 			elsif self[idx] > value
 				imax = idx - 1
