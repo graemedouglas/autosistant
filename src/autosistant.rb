@@ -64,8 +64,8 @@ def processRequest(params)
 	awords = []
 	# Bad thing about this is that we only add each action once.  Not sure
 	# if that is bad or not.
-	ActionPhrases.each |row| do
-		if words.include? row["phrase"]
+	ActionPhrases.each do |row|
+		if words.include?(row["phrase"])
 			awords << row["phrase"]
 			words.delete(row["phrase"])
 		end

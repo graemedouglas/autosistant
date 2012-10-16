@@ -1,7 +1,7 @@
 # Actions to be executed by the system.  These eventually need to end up in DB
 
 # Create an array to store all procs in.
-ActionProcs = []
+Tasks = []
 
 =begin
 The goal of this proc is to match identifiers to remaining questions by first
@@ -12,11 +12,11 @@ remove both the question and the answer from their respective arrays.
 Once we either run out of choices or terminate, we attempt to match the
 remaining new identifiers on a first-come, first serve basis.
 =end
-ActionProcs << lambda |newidents| {
+Tasks << lambda |newidents| {
 # Have variable to track number of products identified.
 count = 0
 # Eliminate question if we have an identifier for it, and construct new query
-newidents.each |e| do
+newidents.each do |e|
 	# First get an initial count from last query
 	count = ConfigDB.execute(info[:queries][:count])[0]["count"]
 	# Get the positive difference.
@@ -35,8 +35,8 @@ newidents.each |e| do
 end
 
 # Now we will attempt to match any other words with whatever we can
-newidents.each |e| do
-	info[:toask].each |q| do
+newidents.each do |e|
+	info[:toask].each do |q|
 		# First get the number of items we currently identify.
 		count = ConfigDB.execute(info[:queries][:count])[0]["count"]
 		# Got the positive difference with new query
