@@ -16,7 +16,6 @@ remaining new identifiers on a first-come, first serve basis.
 Actions << Hash[:description, "Identify products.", :priority, 10, :code,
 lambda { |idents, info|
 ## TODO's
-#   Eliminate questions that no longer make sense.
 #   Make it so the user can stop process and choose identified results
 
 # Some initial setup
@@ -33,6 +32,7 @@ end
 # Queries we will reference several times throughout procedure.
 countq = "SELECT COUNT(DISTINCT pid) AS count FROM productidentifiers"
 questionq = "SELECT question FROM identifiercategories WHERE aid = ?"
+geticidsq = "SELECT DISTINCT icid FROM productidentifiers"
 getidsq = "SELECT DISTINCT pid FROM productidentifiers"
 
 # Have variable to track number of products identified.
@@ -82,6 +82,18 @@ idents.each do |e|
 			idents.delete(e)
 			break
 		end
+	end
+end
+
+# Eliminate all questions that no longer make sense.
+eliminator = ConfigDB.execute(geticidsq + info[:querypred])
+eliminator.each_index {|i| eliminator[i] = eliminator[i].flatten}
+eliminator = eliminator.flatten
+eliminator.delete("icid")
+info[:toask].each do |k, v|
+	if eliminator.include?(k)
+	else
+		info[:toask].delete(k)
 	end
 end
 
