@@ -86,10 +86,11 @@ idents.each do |e|
 end
 
 # If the product has been identified, return it.
-if 1 == count1
+if 1 == count1 or 1 == count2
 	info[:results] = ConfigDB.execute(getidsq + info[:querypred])
 	return 1
 end
+
 # Choose the next question
 # TODO: ONLY TAKE RANDOM IF CONFIG SAYS TO!
 if info[:toask].length == 0
