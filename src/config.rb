@@ -17,7 +17,6 @@ UserStoreDB.results_as_hash = true
 ################################################################################
 
 ### Database-stored constants ##################################################
-Actions = ConfigDB.execute("SELECT * FROM actions;")
 ActionPhrases = ConfigDB.execute("SELECT * FROM actionphrases;")
 IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
 ################################################################################

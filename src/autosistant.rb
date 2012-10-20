@@ -12,7 +12,8 @@ require 'sinatra'		# Webframework to use
 require 'yaml'			# Required for serializing objects.
 require 'sqlite3'		# Require the database module we will use.
 require './config.rb'		# System wide configuration options
-require './classes.rb'		# System tasks code.
+require './classes.rb'		# Various classes and classmods needed.
+require './actions.rb'		# System actions code.
 
 if DEBUG_ON
 	require 'shotgun'	# Restart server on each page refresh
@@ -37,17 +38,18 @@ def processRequest(params)
 	# Create or retrieve the user object.
 	user = nil
 	if uid == "-1"
-		# Must create new user object.
-		user = User.new
-		result = 1
-		
 		# Ensure we generate a unique uuid.
+		result = nil
 		until result == 0
 			uid = SecureRandom.uuid
 			result = UserStoreDB.execute("SELECT COUNT(*) as count"+
 					" FROM userstore WHERE uid = ?;", uid)
 			result = result[0]["count"]
 		end
+		
+		# Must create new user object.
+		user = User.new(uid)
+		result = 1
 	else
 		# Get the user object from the database.
 		fromDB = true
@@ -59,20 +61,44 @@ def processRequest(params)
 	end
 	
 	# Split the words.
-	words = params[:message].split(/[\s,.?!;:]+/)
+	words = params[:message].downcase.split(/[\s,.?!;:]+/)
 	# Now we process the words.  We want to seperate action words from rest.
-	awords = []
-	# Bad thing about this is that we only add each action once.  Not sure
+	newtasks = []
+	# Iffy thing about this is that we only add each action once.  Not sure
 	# if that is bad or not.
 	ActionPhrases.each do |row|
 		if words.include?(row["phrase"])
-			awords << row["phrase"]
+			newtasks << row["aid"]
 			words.delete(row["phrase"])
 		end
 	end
 	
-	# Perform the next task.
-	# TODO: Implement here.
+	# Add new tasks.
+	newtasks.each do |id|
+		action = Actions[id]
+		newtask = Task.new(action[:priority], id)
+		user.addTask(newtask)
+	end
+	
+	newmessage = nil
+	# Perform the highest priority task.
+	if user.tasks != nil
+		newmessage = user.doTask(words)
+	elsif
+		newmessage = "I have no current tasks to complete, how can I "+
+				"help you?"
+	end
+	
+	if newmessage == nil or newmessage == -1
+		newmessage = "I don't understand what you are asking, can you"+
+				" ask me again?"
+	elsif newmessage == 1
+		# Get the results
+		#TODO
+		newmessage = "Successfully found product!"
+	end
+	
+	# TODO: Store history here.
 	
 	# Insert/update serialized user object, as needed.
 	if fromDB
@@ -84,7 +110,7 @@ def processRequest(params)
 	end
 	
 	# Return the user id, new message.
-	return uid, ""
+	return uid, newmessage
 	
 end
 ################################################################################
@@ -107,7 +133,8 @@ end
 
 post '/autosistant-ajax' do
 	uid, message = processRequest(params)
-	"{\n\t\"uid\":\"#{uid}\",\n\t\"message\":\"#{h(params[:message])}\"\n}"
+	#"{\n\t\"uid\":\"#{uid}\",\n\t\"message\":\"#{h(params[:message])}\"\n}"
+	"{\n\t\"uid\":\"#{uid}\",\n\t\"message\":\"#{message}\"\n}"
 end
 
 get '/about' do

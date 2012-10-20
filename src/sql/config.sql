@@ -9,19 +9,11 @@ CREATE TABLE options
 	UNIQUE (key)
 );
 
-CREATE TABLE actions
-(
-	id INTEGER PRIMARY KEY,
-	description TEXT,
-	code TEXT
-);
-
 CREATE TABLE actionphrases
 (
 	id INTEGER PRIMARY KEY,
 	phrase TEXT,
-	aid INTEGER,
-	FOREIGN KEY(aid) REFERENCES actions(id)
+	aid INTEGER,	--References actions.rb's Actions array keys.
 	UNIQUE (phrase)
 );
 
