@@ -39,7 +39,7 @@ getidsq = "SELECT DISTINCT pid FROM productidentifiers"
 count1 = 0
 count2 = 0
 
-require 'ruby-debug';debugger
+#require 'ruby-debug';debugger
 # Eliminate question if we have an identifier for it, and construct new query
 idents.each do |e|
 	# First get an initial count from last query
