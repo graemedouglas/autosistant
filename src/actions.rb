@@ -98,18 +98,13 @@ info[:toask].each do |k, v|
 end
 
 # If the product has been identified, return it.
-if 1 == count1 or 1 == count2
+if 1 == count1 or 1 == count2 or info[:toask].length == 0
 	info[:results] = ConfigDB.execute(getidsq + info[:querypred])
 	return 1
 end
 
 # Choose the next question
 # TODO: ONLY TAKE RANDOM IF CONFIG SAYS TO!
-if info[:toask].length == 0
-	# Do end of task items.
-	# Return number of next task to do.
-	return 1
-end
 nextq = info[:toask].keys.sample
 
 # Setup previous information for next request

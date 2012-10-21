@@ -35,8 +35,10 @@ $(document).ready(function(){
      // AJAX request made succesfully!
      // Parse the JSON message.
      var parsed = $.parseJSON(data);
+     $('#chatarea').append("\nMe: "+$('textarea#message').val()
+      .replace(/\n/g, ' '));
      // Add the message.
-     $('#chatarea').append("\n"+parsed.message);
+     $('#chatarea').append("\nAgent: "+parsed.message);
      // Set the userid.
      $('input#userid').attr('value', parsed.uid);
      // Clear the message area.
@@ -54,7 +56,7 @@ $(document).ready(function(){
 <body>
 <h1> <%=CompanyName%> | autosistant Chat Client </h1>
 <textarea name="chatarea" id="chatarea" readonly="readonly" rows="20" cols="90">
-Hello, my name is Hank and I will be your assistant today.  How can I help you?
+Agent: Hello! My name is Hank.  How can I help you?
 </textarea>
 <form id="chatform" action="">
 <textarea name="message" id="message" rows="5" cols="90"

@@ -82,7 +82,7 @@ def processRequest(params)
 	
 	newmessage = nil
 	# Perform the highest priority task.
-	if user.tasks != nil
+	if user.tasks != nil and user.nextTask != nil
 		newmessage = user.doTask(words)
 	elsif
 		newmessage = "I have no current tasks to complete, how can I "+
