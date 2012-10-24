@@ -38,17 +38,19 @@ end
 ################################################################################
 ### Task ###
 class Task
+	attr_accessor :id
 	attr_accessor :priority
 	attr_accessor :item
 	attr_accessor :info
 	
 	### Variables
+	@id		# The action id.
 	@priority	# Task priority.
 	@item		# Either a proc or a list of Tasks to complete.
 	@info		# Contains information specific to this task.
 	
 	### Methods
-	def initialize(priority, item)
+	def initialize(id, priority, item)
 		@priority = priority
 		@item = item
 		@info = Hash.new
@@ -93,7 +95,8 @@ class User
 		if t.item.kind_of?(Array)
 			self.doTask(idents, t.item)
 		elsif t.item.kind_of?(Integer)
-			return Actions[t.item][:code].call(idents, t.info)
+			return Actions[t.item][:code].call(idents, t.info,
+								@tasks)
 		else
 			# TODO: Perhaps throw an error here?
 		end

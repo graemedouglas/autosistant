@@ -29,27 +29,14 @@ INSERT INTO actionphrases(phrase, aid)
 	VALUES ('price', 0);
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('stock', 0);
+INSERT INTO actionphrases(phrase, aid)
+	VALUES ('forget', 1);
+INSERT INTO actionphrases(phrase, aid)
+	VALUES ('show', 2);
+INSERT INTO actionphrases(phrase, aid)
+	VALUES ('list', 2);
 
 -- Configure ways of identifying first product
-INSERT INTO productidentifiers(pid, icid, value)
-	VALUES (0, (SELECT id FROM identifiercategories WHERE name = "make"),
-	       'toyota');
-INSERT INTO productidentifiers(pid, icid, value)
-	VALUES (0, (SELECT id FROM identifiercategories WHERE name = "model"),
-	       'hilux');
-INSERT INTO productidentifiers(pid, icid, value)
-	VALUES (0, (SELECT id FROM identifiercategories WHERE name = "model"),
-	       'pickup');
-INSERT INTO productidentifiers(pid, icid, value)
-	VALUES (0, (SELECT id FROM identifiercategories WHERE name = "year"),
-	       '1980');
-INSERT INTO productidentifiers(pid, icid, value)
-	VALUES (0, (SELECT id FROM identifiercategories WHERE name = "called"),
-	       'engine block');
-INSERT INTO productidentifiers(pid, icid, value)
-	VALUES (0, (SELECT id FROM identifiercategories WHERE name = "option"),
-	       '20r');
-
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (1, (SELECT id FROM identifiercategories WHERE name = "make"),
 	       'toyota');
@@ -64,7 +51,26 @@ INSERT INTO productidentifiers(pid, icid, value)
 	       '1980');
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (1, (SELECT id FROM identifiercategories WHERE name = "called"),
-	       'camshaft');
+	       'engine block');
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (1, (SELECT id FROM identifiercategories WHERE name = "option"),
+	       '20r');
+
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (2, (SELECT id FROM identifiercategories WHERE name = "make"),
+	       'toyota');
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (2, (SELECT id FROM identifiercategories WHERE name = "model"),
+	       'hilux');
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (2, (SELECT id FROM identifiercategories WHERE name = "model"),
+	       'pickup');
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (2, (SELECT id FROM identifiercategories WHERE name = "year"),
+	       '1980');
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (2, (SELECT id FROM identifiercategories WHERE name = "called"),
+	       'camshaft');
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (2, (SELECT id FROM identifiercategories WHERE name = "option"),
 	       '20r');

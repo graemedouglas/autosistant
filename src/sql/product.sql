@@ -5,6 +5,6 @@ CREATE TABLE product
 (
 	id INTEGER PRIMARY KEY,
 	name TEXT,
-	price INTEGER,		-- Store price as integer.  Divide by 100 to get price.
+	price INTEGER,	-- Store price as integer.  Divide by 100 to get price.
 	qty INTEGER
 );

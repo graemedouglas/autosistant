@@ -14,7 +14,7 @@ remaining new identifiers on a first-come, first serve basis.
 =end
 
 Actions << Hash[:description, "Identify products.", :priority, 10, :code,
-lambda { |idents, info|
+lambda { |idents, info, tasklist|
 ## TODO's
 #   Make it so the user can stop process and choose identified results
 
@@ -45,7 +45,8 @@ idents.each do |e|
 	# First get an initial count from last query
 	count1 = ConfigDB.execute(countq + info[:querypred])[0]["count"]
 	# Get the positive difference.
-	count2 = ConfigDB.execute(countq + info[:querypred] + " AND (icid = ? AND value = ?)",info[:prevq],e)[0]["count"]
+	count2 = ConfigDB.execute(countq + info[:querypred] +
+		" AND (icid = ? AND value = ?)", info[:prevq], e)[0]["count"]
 	if count1 - count2 > 0 and count2 > 0
 		# Delete previous question from toask list if its not 'option'
 		# TODO: Make this more efficient?
@@ -87,6 +88,7 @@ end
 
 # Eliminate all questions that no longer make sense.
 eliminator = ConfigDB.execute(geticidsq + info[:querypred])
+eliminator.each_index {|i| eliminator[i].delete_if {|k, v| k.kind_of?(Integer)}}
 eliminator.each_index {|i| eliminator[i] = eliminator[i].flatten}
 eliminator = eliminator.flatten
 eliminator.delete("icid")
@@ -100,6 +102,8 @@ end
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
 	info[:results] = ConfigDB.execute(getidsq + info[:querypred])
+	# Remove this task
+	tasklist.shift
 	return 1
 end
 
@@ -111,4 +115,54 @@ nextq = info[:toask].keys.sample
 info[:prevqname] = (IdentCats.select { |x| x['id'] == nextq })[0]['name']
 # Return the question
 (IdentCats.select { |row| row["id"] == nextq })[0]["question"]
+}]
+
+=begin
+Termination of highest priority level task.
+=end
+Actions << Hash[:description, "End immediate task.", :priority, -100, :code,
+lambda { |idents, info, tasklist|
+# Remove this task and the task we intend to get rid of.
+2.times {tasklist.shift}
+# Return looping signal
+return 2
+}]
+
+=begin
+Show results of current search.
+=end
+Actions << Hash[:description, "Show results.", :priority, -100, :code,
+lambda { |idents, info, tasklist|
+
+# Remove this task.
+tasklist.shift
+
+# Erroneous if there is nothing to get rid of.
+# TODO Get rid of these stupid magic numbers!
+# TODO If I ever use tasks with lists for items, I need to recursively get item
+if tasklist[0].item != 0 then return -1 end
+
+# Get the next task's info.
+info = tasklist[0].info
+
+# The query to get all of the product ids
+getpidsq = "SELECT DISTINCT pid FROM productidentifiers"
+getproductsq = "SELECT * FROM product WHERE id = ?"
+
+pids = ConfigDB.execute(getpidsq + info[:querypred])
+pids.each_index { |i| pids[i].delete_if {|k, v| k.kind_of?(Integer)} }
+pids.each_index { |i| pids[i] = pids[i].flatten }
+pids = pids.flatten
+pids.delete("pid")
+
+toret = "These are the products I have identified:\n"
+
+# Return information about each product left
+pids.length.times do |i|
+	row = ProductDB.execute(getproductsq, pids[i])[0]
+	next if row == nil
+	toret << i.to_s + ":\t " + row["name"] + "\n"
+end
+
+return toret
 }]

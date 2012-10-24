@@ -76,26 +76,28 @@ def processRequest(params)
 	# Add new tasks.
 	newtasks.each do |id|
 		action = Actions[id]
-		newtask = Task.new(action[:priority], id)
+		newtask = Task.new(id, action[:priority], id)
 		user.addTask(newtask)
 	end
 	
 	newmessage = nil
-	# Perform the highest priority task.
-	if user.tasks != nil and user.nextTask != nil
-		newmessage = user.doTask(words)
-	elsif
-		newmessage = "I have no current tasks to complete, how can I "+
-				"help you?"
-	end
+	until newmessage != 2 and newmessage != nil
+		# Perform the highest priority task.
+		if user.tasks != nil and user.nextTask != nil
+			newmessage = user.doTask(words)
+		elsif
+			newmessage = "I have no current tasks to complete, "+
+				"how can I help you?"
+		end
 	
-	if newmessage == nil or newmessage == -1
-		newmessage = "I don't understand what you are asking, can you"+
-				" ask me again?"
-	elsif newmessage == 1
-		# Get the results
-		#TODO
-		newmessage = "Successfully found product!"
+		if newmessage == nil or newmessage == -1
+			newmessage = "I don't understand what you are asking"+
+				" can you rephrase your question?"
+		elsif newmessage == 1
+			# Get the results
+			#TODO
+			newmessage = "Successfully found product!"
+		end
 	end
 	
 	# TODO: Store history here.
@@ -111,7 +113,6 @@ def processRequest(params)
 	
 	# Return the user id, new message.
 	return uid, newmessage
-	
 end
 ################################################################################
 
