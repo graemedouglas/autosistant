@@ -155,13 +155,13 @@ pids.each_index { |i| pids[i] = pids[i].flatten }
 pids = pids.flatten
 pids.delete("pid")
 
-toret = "These are the products I have identified:\n"
+toret = "These are the products I have identified:\\n"
 
 # Return information about each product left
 pids.length.times do |i|
 	row = ProductDB.execute(getproductsq, pids[i])[0]
 	next if row == nil
-	toret << i.to_s + ":\t " + row["name"] + "\n"
+	toret << i.to_s + ":\\t " + row["name"] + "\\n"
 end
 
 return toret
