@@ -12,11 +12,13 @@ remove both the question and the answer from their respective arrays.
 Once we either run out of choices or terminate, we attempt to match the
 remaining new identifiers on a first-come, first serve basis.
 =end
-
 Actions << Hash[:description, "Identify products.", :priority, 10, :code,
-lambda { |idents, info, tasklist|
+lambda { |idents, user|
 ## TODO's
 #   Make it so the user can stop process and choose identified results
+
+tasklist = user.tasks
+info = user.nextTask.info
 
 # Some initial setup
 if info[:querypred] == nil
@@ -121,9 +123,9 @@ info[:prevqname] = (IdentCats.select { |x| x['id'] == nextq })[0]['name']
 Termination of highest priority level task.
 =end
 Actions << Hash[:description, "End immediate task.", :priority, -100, :code,
-lambda { |idents, info, tasklist|
+lambda { |idents, user|
 # Remove this task and the task we intend to get rid of.
-2.times {tasklist.shift}
+2.times { user.tasks.shift }
 # Return looping signal
 return 2
 }]
@@ -132,7 +134,10 @@ return 2
 Show results of current search.
 =end
 Actions << Hash[:description, "Show results.", :priority, -100, :code,
-lambda { |idents, info, tasklist|
+lambda { |idents, user|
+
+tasklist = user.tasks
+info = user.nextTask.info
 
 # Remove this task.
 tasklist.shift
@@ -140,7 +145,7 @@ tasklist.shift
 # Erroneous if there is nothing to get rid of.
 # TODO Get rid of these stupid magic numbers!
 # TODO If I ever use tasks with lists for items, I need to recursively get item
-if tasklist[0].item != 0 then return -1 end
+if tasklist.first.item != 0 then return nil end
 
 # Get the next task's info.
 info = tasklist[0].info
@@ -155,14 +160,55 @@ pids.each_index { |i| pids[i] = pids[i].flatten }
 pids = pids.flatten
 pids.delete("pid")
 
-toret = "These are the products I have identified:\\n"
+toask = "These are the products I have identified:\\n"
 
-# Return information about each product left
+# Build up return string
 pids.length.times do |i|
 	row = ProductDB.execute(getproductsq, pids[i])[0]
 	next if row == nil
-	toret << i.to_s + ":\\t " + row["name"] + "\\n"
+	toask << "\\tp" + i.to_s + ":\\t " + row["name"] + "\\n"
+end
+toask << "Which item(s) would you like to add to the order?"
+
+# Build up action that allows user to choose products from list.
+# TODO Get rid of magic numbers, if possible.
+newtask = Task.new(3, Actions[3][:priority], 3)
+newtask.info[:pids] = pids
+
+# Pop off identification task, pop on new task
+tasklist.shift
+user.addTask(newtask)
+
+return toask
+}]
+
+=begin
+Choose items from a selection.  Desired items must be chosen with the quantity
+before the item.  Items must take the form p<number>.
+=end
+Actions << Hash[:description, "Choose products from list.", :priority, -101,
+		:code, lambda { |idents, user|
+
+info = user.nextTask.info
+
+lastqty = 1
+idents.each do |newident|
+	# If this string represents an item...
+	md = newident.match(/^p([0-9]*)$/i)
+	if md != nil and md[0] =~ /^[-+]?[0-9]+$/
+		key = md[0].to_i
+		pid = info.delete_at(key)
+		user.toOrder[pid] = lastqty
+		if lastqty != 1 then lastqty = 1 end
+	# If this string strictly represents 
+	elsif newident =~ /^[-+]?[0-9]+$/
+		lastqty = newident.to_i
+		# TODO What if the user wants to delete items from order?!?
+		if lastqty < 1 then lastqty = 0 end
+	end
 end
 
-return toret
+# Remove this task
+user.tasks.shift
+return 2
 }]

@@ -95,8 +95,7 @@ class User
 		if t.item.kind_of?(Array)
 			self.doTask(idents, t.item)
 		elsif t.item.kind_of?(Integer)
-			return Actions[t.item][:code].call(idents, t.info,
-								@tasks)
+			return Actions[t.item][:code].call(idents, self)
 		else
 			# TODO: Perhaps throw an error here?
 		end

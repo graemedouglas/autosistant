@@ -32,6 +32,8 @@ INSERT INTO actionphrases(phrase, aid)
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('forget', 1);
 INSERT INTO actionphrases(phrase, aid)
+	VALUES ('done', 1);
+INSERT INTO actionphrases(phrase, aid)
 	VALUES ('show', 2);
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('list', 2);

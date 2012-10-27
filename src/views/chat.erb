@@ -1,8 +1,5 @@
 <%#
 Author:			Graeme Douglas
-Create date/time:	2012/09/29/16:00
-Create date/time:	2012/09/29/17:08
-
 The chat client page. Targets HTML5.
 %>
 <% require './config.rb'%>
@@ -35,6 +32,7 @@ $(document).ready(function(){
      // AJAX request made succesfully!
      // Parse the JSON message.
      var parsed = $.parseJSON(data);
+     // Add the sent message.
      $('#chatarea').append("\nMe: "+$('textarea#message').val()
       .replace(/\n/g, ' '));
      // Add the message.
@@ -43,6 +41,8 @@ $(document).ready(function(){
      $('input#userid').attr('value', parsed.uid);
      // Clear the message area.
      $('#message').attr('value', '');
+     // Move the scroll bar to the bottom
+     $('#chatarea').scrollTop($('#chatarea')[0].scrollHeight);
    },
    error:function(){
      // AJAX Request failed!
