@@ -104,10 +104,9 @@ end
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
 	info[:results] = ConfigDB.execute(getidsq + info[:querypred])
-	# Remove this task
-	tasklist.shift
 	# Add list task
-	newtask = Task.new(2, Action[2][:priority], 2)
+	newtask = Task.new(2, Actions[2][:priority], 2)
+	user.addTask(newtask)
 	return nil, 2
 end
 
