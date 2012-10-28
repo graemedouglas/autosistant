@@ -37,6 +37,8 @@ INSERT INTO actionphrases(phrase, aid)
 	VALUES ('show', 2);
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('list', 2);
+INSERT INTO actionphrases(phrase, aid)
+	VALUES ('summarize', 4);
 
 -- Configure ways of identifying first product
 INSERT INTO productidentifiers(pid, icid, value)

@@ -195,10 +195,10 @@ lastqty = 1
 idents.each do |newident|
 	# If this string represents an item...
 	md = newident.match(/^p([0-9]*)$/i)
-	if md != nil and md[0] =~ /^[-+]?[0-9]+$/
+	if md != nil and (md[1] =~ /^[-+]?[0-9]+$/ or md[0].kind_of?(Integer))
 		key = md[0].to_i
-		pid = info.delete_at(key)
-		user.toOrder[pid] = lastqty
+		pid = info[:pids].delete_at(key)
+		user.updateOrder(pid, lastqty)
 		if lastqty != 1 then lastqty = 1 end
 	# If this string strictly represents 
 	elsif newident =~ /^[-+]?[0-9]+$/
@@ -211,4 +211,23 @@ end
 # Remove this task
 user.tasks.shift
 return 2
+}]
+
+=begin
+Show the order information.
+=end
+Actions << Hash[:description, "Display order info", :priority, -102,
+		:code, lambda { |idents, user|
+# Queries we will reference
+getproductq = "SELECT * FROM product WHERE id = ?"
+newmessage = "Your current order includes:"
+user.toBuy.each_pair do |k, v|
+	product = ProductDB.execute(getproductq, k)[0]
+	newmessage << "\\n\\t Product: #{product["name"]}. Quantity: #{v}"
+end
+
+# Pop off this task, as it is complete
+user.tasks.shift
+
+return newmessage
 }]

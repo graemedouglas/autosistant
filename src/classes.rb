@@ -100,4 +100,13 @@ class User
 			# TODO: Perhaps throw an error here?
 		end
 	end
+	def updateOrder(pid, qty)
+		if !(pid.kind_of?(Integer) and qty.kind_of?(Integer))
+			# TODO: log the error.
+		elsif @toBuy[pid] == nil
+			@toBuy[pid] = qty
+		else
+			@toBuy[pid] += qty
+		end
+	end
 end
