@@ -106,7 +106,9 @@ if 1 == count1 or 1 == count2 or info[:toask].length == 0
 	info[:results] = ConfigDB.execute(getidsq + info[:querypred])
 	# Remove this task
 	tasklist.shift
-	return 1
+	# Add list task
+	newtask = Task.new(2, Action[2][:priority], 2)
+	return nil, 2
 end
 
 # Choose the next question
@@ -116,7 +118,7 @@ nextq = info[:toask].keys.sample
 # Setup previous information for next request
 info[:prevqname] = (IdentCats.select { |x| x['id'] == nextq })[0]['name']
 # Return the question
-(IdentCats.select { |row| row["id"] == nextq })[0]["question"]
+return (IdentCats.select { |row| row["id"] == nextq })[0]["question"], 1
 }]
 
 =begin
@@ -127,7 +129,7 @@ lambda { |idents, user|
 # Remove this task and the task we intend to get rid of.
 2.times { user.tasks.shift }
 # Return looping signal
-return 2
+return nil, 2
 }]
 
 =begin
@@ -145,7 +147,9 @@ tasklist.shift
 # Erroneous if there is nothing to get rid of.
 # TODO Get rid of these stupid magic numbers!
 # TODO If I ever use tasks with lists for items, I need to recursively get item
-if tasklist.first.item != 0 then return nil end
+if tasklist.first == nil or tasklist.first.item != 0
+	return "There is nothing to list.", 2
+end
 
 # Get the next task's info.
 info = tasklist[0].info
@@ -179,7 +183,7 @@ newtask.info[:pids] = pids
 tasklist.shift
 user.addTask(newtask)
 
-return toask
+return toask, 1
 }]
 
 =begin
@@ -210,7 +214,9 @@ end
 
 # Remove this task
 user.tasks.shift
-return 2
+newtask = Task.new(4, Actions[4][:priority], 4)
+user.addTask(newtask)
+return nil, 2
 }]
 
 =begin
@@ -218,16 +224,23 @@ Show the order information.
 =end
 Actions << Hash[:description, "Display order info", :priority, -102,
 		:code, lambda { |idents, user|
+# Check if there are any products in the order.
+if user.emptyOrder?
+	return "You currently have no items in your order.", 2
+end
+
 # Queries we will reference
 getproductq = "SELECT * FROM product WHERE id = ?"
 newmessage = "Your current order includes:"
 user.toBuy.each_pair do |k, v|
 	product = ProductDB.execute(getproductq, k)[0]
-	newmessage << "\\n\\t Product: #{product["name"]}. Quantity: #{v}"
+	# TODO: make currency marker configurable.
+	newmessage << "\\n\\t Price: $#{'%.2f'%(product["price"].to_f/100)}. "+
+			"Product: #{product["name"]}. Quantity: #{v}"
 end
 
 # Pop off this task, as it is complete
 user.tasks.shift
 
-return newmessage
+return newmessage, 2
 }]

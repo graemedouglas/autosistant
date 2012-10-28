@@ -80,23 +80,36 @@ def processRequest(params)
 		user.addTask(newtask)
 	end
 	
+	# TODO: Make signal make a whole lot more sense
 	newmessage = nil
-	until newmessage != 2 and newmessage != nil
+	signal = 2
+	until signal != 2
 		# Perform the highest priority task.
 		if user.tasks != nil and user.nextTask != nil
-			newmessage = user.doTask(words)
-		elsif
-			newmessage = "I have no current tasks to complete, "+
-				"how can I help you?"
+			if newmessage != nil
+				newmessage2, signal = user.doTask(words)
+				if newmessage2 != nil
+					newmessage << "\\n\\n" + newmessage2
+				end
+			else
+				newmessage, signal = user.doTask(words)
+			end
+		else
+			if newmessage == nil
+				newmessage = "I have no current tasks to "+
+						"complete, how can I help you?"
+			else
+				newmessage << "\\n\\nI have no current tasks "+
+						"to complete, how can I help "+
+						"you?"
+			end
+			signal = 0
 		end
-	
-		if newmessage == nil or newmessage == -1
+		
+		if newmessage == nil and signal != 2
 			newmessage = "I don't understand what you are asking"+
 				" can you rephrase your question?"
-		elsif newmessage == 1
-			# Get the results
-			#TODO
-			newmessage = "Successfully found product!"
+			signal = 0
 		end
 	end
 	

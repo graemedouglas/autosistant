@@ -109,4 +109,7 @@ class User
 			@toBuy[pid] += qty
 		end
 	end
+	def emptyOrder?
+		@toBuy.empty?
+	end
 end
