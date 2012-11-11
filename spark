@@ -20,7 +20,20 @@ Actions
 		"overview"
 	Place order
 		--Handle directly when no more tasks
-	
+		-Information
+			-Payment Method
+				-Credit Card
+					-Number
+					-Expiry Date
+						-Month
+						-Year
+			-Shipping Information
+				-Country
+				-State
+				-City
+				-Postal Code
+				-Address
+
 Databases
 	Configuration
 		-options

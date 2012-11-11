@@ -33,3 +33,15 @@ CREATE TABLE productidentifiers
 	value TEXT,
 	FOREIGN KEY(icid) REFERENCES identifiercategories(id)
 );
+
+-- Order-time questions.
+CREATE TABLE orderquestions
+(
+	id INTEGER PRIMARY KEY,	
+	priority INTEGER,	-- Smaller number means higher priority.
+	question TEXT,		-- The question to ask.
+	regex TEXT,		-- The regex used to verify this information.
+	label TEXT,		-- Order information label, like 'city'.
+	skiphint INTEGER,	-- The priority
+	UNIQUE (question)
+);

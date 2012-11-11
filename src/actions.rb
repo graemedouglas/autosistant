@@ -243,3 +243,89 @@ user.tasks.shift
 
 return newmessage, 2
 }]
+
+=begin
+Enter order information.
+=end
+Actions << Hash[:description, "Enter order information.", :priority, 100,
+		:code, lambda { |idents, user|
+# Get the task information.
+info = user.nextTask.info
+
+# If first time executing this task...
+if info[:toask] == nil
+	# Check to see if there anything to order.
+	if user.toBuy.empty?
+		user.tasks.shift
+		return "There isn't anything to order!", 2
+	elsif user.info[:orderinfo] != nil
+		return "Something very bad is happening...", 2
+	end
+	
+	# Create the hash for the order information
+	info[:orderinfo] = Hash.new
+	
+	# Create an empty list for questions.
+	info[:toask] = []
+	
+	# Get all of the questions to ask, choose one of each type at random
+	questions = ConfigDB.execute("SELECT * FROM orderquestions "+
+		"ORDER BY priority ASC")
+	samequestions = nil
+	questions.each do |row|
+		# If there is nothing in same questions, add row to it.
+		if samequestions == nil
+			samequestions = [row]
+		# If new row has same priority, add it to array.
+		elsif samequestions[0]["priority"] == row["priority"]
+			samequestions << row
+		# Otherwise we need to choose a question randomly.
+		elsif samequestions[0]["priority"] < row["priority"]
+			info[:toask] << samequestions.sample
+			samequestions = [row]
+		end
+	end
+	
+	# Ask next question.
+	return info[:toask].first["question"], 1
+end
+
+# Verify last answer
+newmessage = nil
+idents.each do |ident|
+	if info[:toask].first["regex"] == '' or
+			ident =~ /#{info[:toask].first["regex"]}/i
+		newmessage = ""
+		
+		# Get the label from the question.
+		label = info[:toask].first["label"].to_sym
+		
+		# Skip ahead to next question.
+		skiphint = info[:toask].first["skiphint"]
+		info[:toask].shift
+		while !info[:toask].empty? and
+				skiphint > (info[:toask].first)["skiphint"]
+			info[:toask].shift
+		end
+		
+		# Store new information.
+		info[:orderinfo][label] = ident
+		
+		# Break out.
+		break
+	end
+end
+if newmessage == nil
+	newmessage = "Your answer didn't make sense.  Lets try this again."+
+			"\\n\\n"
+end
+
+# If more questions, ask next question.  Otherwise, confirm and place order.
+if info[:toask].empty?
+	# Remove this item off the task list.
+	user.tasks.shift
+	return "Time to place an order... and implement that stuff!", 1
+else
+	return newmessage + info[:toask].first["question"], 1
+end
+}]
