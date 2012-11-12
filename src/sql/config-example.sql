@@ -84,40 +84,41 @@ INSERT INTO productidentifiers(pid, icid, value)
 
 ---- Questions to be asked upon placing an order.
 --- First question.
+---- TODO: Replace all '' with NULLs
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (0, 'Would you like to pick up the item in store?',
-		'^(yes|no|[yn])$', 'pickup?', -1);
+		'(yes|y)|(no|n)', 'pickup?', '130|-1');
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (0, 'Will you pick up the item in store?',
-		'^(yes|no|[yn])$', 'pickup?', -1);
+		'(yes|y)|(no|n)', 'pickup?', '130|-1');
 --- Location questions.
 -- Country.
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (100, 'Which country do you live in?',
-		'', 'country', -1);
+		'', 'country', '-1');
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (100, 'Which country are you currently located in?',
-		'', 'country', -1);
+		'', 'country', '-1');
 -- State/city/province.
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (110, 'Which state, province, or territory do you live in?',
-		'', 'state', -1);
+		'', 'state', '-1');
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (110, 'Which province, territory, or state are you located in?',
-		'', 'state', -1);
+		'', 'state', '-1');
 -- City/town/village.
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (120, 'Which city, town, or village do you live in?',
-		'', 'city', -1);
+		'', 'city', '-1');
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (120, 'Which city, town, or village are you located in?',
-		'', 'city', -1);
+		'', 'city', '-1');
 -- Postal code.
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (130, 'What is your postal code?',
-		'^(\d{5,6}|[a-z]\d[a-z]-?\d[a-z]\d)$', 'postalcode', -1);
+		'(\d{5,6})|([a-z]\d[a-z]-?\d[a-z]\d)', 'postalcode', '-1');
 -- Address.
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (140, 'What is your address?',
-		'', 'address', -1);
+		'', 'address', '-1');
 

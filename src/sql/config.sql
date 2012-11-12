@@ -42,6 +42,6 @@ CREATE TABLE orderquestions
 	question TEXT,		-- The question to ask.
 	regex TEXT,		-- The regex used to verify this information.
 	label TEXT,		-- Order information label, like 'city'.
-	skiphint INTEGER,	-- The priority
+	skiphint TEXT,		-- TODO: Make this clear.
 	UNIQUE (question)
 );

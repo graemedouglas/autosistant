@@ -1,5 +1,15 @@
-# Actions to be executed by the system.  These eventually need to end up in DB
+### Functions ##################################################################
+# Return an array of integers, signalling which question priority to skip to.
+def processSkipHint(skiphint)
+	if !skiphint.kind_of?(String)
+		return nil
+	else
+		return skiphint.split('|').map{|item| item.to_i}
+	end
+end
+################################################################################
 
+### Actions ####################################################################
 # Create an array to store all procs in.
 Actions = []
 
@@ -275,13 +285,16 @@ if info[:toask] == nil
 	questions.each do |row|
 		# If there is nothing in same questions, add row to it.
 		if samequestions == nil
+			row["skiphint"]=processSkipHint(row["skiphint"])
 			samequestions = [row]
 		# If new row has same priority, add it to array.
 		elsif samequestions[0]["priority"] == row["priority"]
+			row["skiphint"]=processSkipHint(row["skiphint"])
 			samequestions << row
 		# Otherwise we need to choose a question randomly.
 		elsif samequestions[0]["priority"] < row["priority"]
 			info[:toask] << samequestions.sample
+			row["skiphint"]=processSkipHint(row["skiphint"])
 			samequestions = [row]
 		end
 	end
@@ -294,17 +307,28 @@ end
 newmessage = nil
 idents.each do |ident|
 	if info[:toask].first["regex"] == '' or
-			ident =~ /#{info[:toask].first["regex"]}/i
+			md = ident.match(/^#{info[:toask].first["regex"]}$/i)
 		newmessage = ""
 		
 		# Get the label from the question.
 		label = info[:toask].first["label"].to_sym
 		
+		# Determine which part of regex it matched.
+		if md != nil
+			whichregex = md.to_a[1..-1].find_index{|x| x != nil}
+		else
+			whichregex = 0
+		end
+		
 		# Skip ahead to next question.
-		skiphint = info[:toask].first["skiphint"]
+		if info[:toask].first["skiphint"].length == 1
+			skiphint = info[:toask].first["skiphint"][0]
+		else
+			skiphint = info[:toask].first["skiphint"][whichregex]
+		end
 		info[:toask].shift
 		while !info[:toask].empty? and
-				skiphint > (info[:toask].first)["skiphint"]
+				skiphint > (info[:toask].first)["priority"]
 			info[:toask].shift
 		end
 		
@@ -329,3 +353,4 @@ else
 	return newmessage + info[:toask].first["question"], 1
 end
 }]
+################################################################################
