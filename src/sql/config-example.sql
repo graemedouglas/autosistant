@@ -6,7 +6,7 @@ INSERT INTO options (key, value) VALUES ('companyname', 'Stan''s Auto Parts');
 INSERT INTO options (key, value) VALUES ('welcomemessage',
 	'Hello!  I will be your assistant for today.  How can I help you?');
 INSERT INTO options (key, value) VALUES ('email_noreply',
-	'gdouglas.dev@gmail.com');
+	'example@thisisntreal.com');
 
 -- Setup identifier categories.
 INSERT INTO identifiercategories (name, question)

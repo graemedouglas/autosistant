@@ -24,8 +24,12 @@ IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
 ### System options #############################################################
 # The resellers name.
 # TODO: Get from DB.
-CompanyName = "Stan's Auto Parts Incorporated"
-NoreplyEmail = ""
+CompanyName = ConfigDB.execute("SELECT value FROM options WHERE key = ?",
+				'companyname')[0]["value"]
+NoreplyEmail = ConfigDB.execute("SELECT value FROM options WHERE key = ?",
+				'email_noreply')[0]["value"]
+WelcomeMessage = ConfigDB.execute("SELECT value FROM options WHERE key = ?",
+				'welcomemessage')[0]["value"]
 OrderNotification = "Hello Customer,  Thankyou for your business!"
 ################################################################################
 

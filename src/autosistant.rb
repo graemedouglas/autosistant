@@ -145,6 +145,10 @@ get '/autosistant' do
 	erb :chat
 end
 
+get '/autosistant/admin' do
+	erb :admin
+end
+
 post '/autosistant-ajax' do
 	uid, message = processRequest(params)
 	#"{\n\t\"uid\":\"#{uid}\",\n\t\"message\":\"#{h(params[:message])}\"\n}"
