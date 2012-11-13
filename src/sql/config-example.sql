@@ -5,6 +5,8 @@
 INSERT INTO options (key, value) VALUES ('companyname', 'Stan''s Auto Parts');
 INSERT INTO options (key, value) VALUES ('welcomemessage',
 	'Hello!  I will be your assistant for today.  How can I help you?');
+INSERT INTO options (key, value) VALUES ('email_noreply',
+	'gdouglas.dev@gmail.com');
 
 -- Setup identifier categories.
 INSERT INTO identifiercategories (name, question)
@@ -121,4 +123,47 @@ INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 INSERT INTO orderquestions(priority, question, regex, label, skiphint)
 	VALUES (140, 'What is your address?',
 		'', 'address', '-1');
-
+--- Payment Information.
+-- Payment Method.
+--INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+--	VALUES (1000, 'Will you be paying by credit card or debit card?',
+--		'(credit)|(debit|interac)', 'paymentmethod', '-1');
+-- Credit card number.
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1100, 'What is your credit card number?',
+		'(\d{13,16})', 'pm_cc_number', '-1');
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1100, 'Can I collect your credit card number?',
+		'(\d{13,16})', 'pm_cc_number', '-1');
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1100, 'Can I please get your credit card number?',
+		'(\d{13,16})', 'pm_cc_number', '-1');
+-- Credit card expiry year.
+-- TODO: make this adaptable.  and not terrible.
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1110, 'What is the expiry year for your credit card?',
+		'(2\d{3})', 'pm_cc_expiry_year', '-1');
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1110, 'In what year will your credit card expire?',
+		'(2\d{3})', 'pm_cc_expiry_year', '-1');
+-- Credit card expiry month.
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1120, 'In which month will your credit card expire?',
+		'(01|02|03|04|05|06|07|08|09|10|11|12|1|2|3|4|5|6|7|8|9|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)',
+		'pm_cc_expiry_month', '-1');
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1120, 'Your credit will expire in which month?',
+		'(01|02|03|04|05|06|07|08|09|10|11|12|1|2|3|4|5|6|7|8|9|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)',
+		'pm_cc_expiry_month', '-1');
+-- Credit card CSC (Card Security Code)
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1130, 'What is the card security code for this credit card?',
+		'(\d{3,4})', 'pm_cc_csc', '-1');
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (1130, 'What is the CVC2, CVV2, or CID for this credit card?',
+		'(\d{3,4})', 'pm_cc_csc', '-1');
+--- Email address.
+INSERT INTO orderquestions(priority, question, regex, label, skiphint)
+	VALUES (100000, 'What email address should I contact you by?',
+		'(|(([A-Za-z0-9]+_+)|([A-Za-z0-9]+\-+)|([A-Za-z0-9]+\.+)|([A-Za-z0-9]+\++))*[A-Za-z0-9]+@((\w+\-+)|(\w+\.))*\w{1,63}\.[a-zA-Z]{2,6})',
+		'email', '-1');

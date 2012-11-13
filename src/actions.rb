@@ -1,3 +1,8 @@
+### Requires ###################################################################
+require 'resolv'
+require 'pony'
+################################################################################
+
 ### Functions ##################################################################
 # Return an array of integers, signalling which question priority to skip to.
 def processSkipHint(skiphint)
@@ -6,6 +11,14 @@ def processSkipHint(skiphint)
 	else
 		return skiphint.split('|').map{|item| item.to_i}
 	end
+end
+# Validate email address.  Taken from: http://www.buildingwebapps.com/articles/79182-validating-email-addresses-with-ruby
+def validate_email_domain(email)
+      domain = email.match(/\@(.+)/)[1]
+      Resolv::DNS.open do |dns|
+          @mx = dns.getresources(domain, Resolv::DNS::Resource::IN::MX)
+      end
+      @mx.size > 0 ? true : false
 end
 ################################################################################
 
@@ -298,6 +311,9 @@ if info[:toask] == nil
 			samequestions = [row]
 		end
 	end
+	if samequestions != nil and !samequestions.empty?
+		info[:toask] << samequestions.sample
+	end
 	
 	# Ask next question.
 	return info[:toask].first["question"], 1
@@ -306,8 +322,10 @@ end
 # Verify last answer
 newmessage = nil
 idents.each do |ident|
+	# TODO: Decide whether I should add ^..$ to the regex.
+		# Month regex becomes a nightmare if I do...
 	if info[:toask].first["regex"] == '' or
-			md = ident.match(/^#{info[:toask].first["regex"]}$/i)
+			md = ident.match(/^#{info[:toask].first["regex"]}/i)
 		newmessage = ""
 		
 		# Get the label from the question.
@@ -348,9 +366,75 @@ end
 if info[:toask].empty?
 	# Remove this item off the task list.
 	user.tasks.shift
-	return "Time to place an order... and implement that stuff!", 1
+	
+	# TODO: Change all Task.new to not need id.  This is stupid
+	newtask = Task.new(6, Actions[6][:priority], 6)
+	newtask.info[:first] = true
+	newtask.info[:orderinfo] = info[:orderinfo]
+	user.addTask(newtask)
+	return nil, 2
 else
 	return newmessage + info[:toask].first["question"], 1
 end
+}]
+
+
+=begin
+Confirm order information
+=end
+Actions << Hash[:description, "Confirm order.", :priority, -1000,
+		:code, lambda { |idents, user|
+# Look for yes/no response.
+if idents == nil or idents.empty?
+	return "Are you sure you want to place this order?", 1
+end
+
+idents.each do |ident|
+	if ident =~ /yes|y/i
+		# Add product information.
+		user.tasks.first.info[:orderinfo][:products] = user.toBuy
+		
+		# Add order to database.
+		ConfigDB.execute("INSERT INTO stagedorders(orderinfo)"+
+					" VALUES (?)",
+					user.info[:orderinfo].to_yaml)
+		
+		# Remove order information.
+		user.toBuy = Hash.new
+		
+=begin
+		# Send an email
+		Pony.mail(:to => user.tasks.first.info[:orderinfo][:email],
+				:from => NoreplyEmail,
+				:subject => "Your Order from #{CompanyName}",
+				:body => OrderNotification)
+=end
+		
+		# Remove this task.
+		user.tasks.shift
+		
+		# Return message.
+		return "Your order was placed successfully. "+
+				"You will receive a confirmation "+
+				"email shortly.", 2
+	elsif ident =~ /no|n/i
+		# Delete order information.
+		user.info[:orderinfo] = nil
+		
+		# Remove this task.
+		user.tasks.shift
+		
+		# Return message.
+		return "Your order information has been deleted.", 2
+	end
+end
+
+# Return message again asking for confirmation.
+if user.tasks.first.info[:first] == true
+	user.tasks.first.info[:first] = nil
+	return "Are you sure you want to place this order?", 1
+end
+return "I'm sorry, I was unable to determine your decision.\\n\\n"+
+		"Are you sure you want to place this order?", 1
 }]
 ################################################################################

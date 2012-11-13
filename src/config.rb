@@ -25,6 +25,8 @@ IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
 # The resellers name.
 # TODO: Get from DB.
 CompanyName = "Stan's Auto Parts Incorporated"
+NoreplyEmail = ""
+OrderNotification = "Hello Customer,  Thankyou for your business!"
 ################################################################################
 
 ### Developer options ##########################################################

@@ -61,7 +61,7 @@ def processRequest(params)
 	end
 	
 	# Split the words.
-	words = params[:message].downcase.split(/[\s,.?!;:]+/)
+	words = params[:message].downcase.split(/[\s,?!;:]+/)
 	# Now we process the words.  We want to seperate action words from rest.
 	newtasks = []
 	# Iffy thing about this is that we only add each action once.  Not sure

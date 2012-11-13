@@ -45,3 +45,11 @@ CREATE TABLE orderquestions
 	skiphint TEXT,		-- TODO: Make this clear.
 	UNIQUE (question)
 );
+
+-- Staged orders, to be later processed by the customer's system.
+-- TODO: Move into its own database?
+CREATE TABLE stagedorders
+(
+	id INTEGER PRIMARY KEY,	
+	orderinfo TEXT
+);

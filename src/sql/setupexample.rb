@@ -1,8 +1,5 @@
 # A quick script for setting up all of the databases.
 
-require 'rubygems'
-require 'sqlite3'
-
 # Delete the databases, if they are present.
 puts system('rm ../sqlite/config.db')
 puts system('rm ../sqlite/product.db')
