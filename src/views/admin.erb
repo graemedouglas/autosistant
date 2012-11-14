@@ -53,6 +53,14 @@ $(document).ready(function() {
   $(this).closest('li').remove();
 })});
 </script>
+<!-- Prevent specific characters from being typed. -->
+<script>
+$(document).ready(function() {
+ $(document).on('change', '.lettersonly', function() {
+alert(this.value);
+  this.value = this.value.replace(/^[A-z]+/gim, "");
+})});
+</script>
 <style>
 .ui-tabs-vertical { width: 55em; }
 .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
@@ -84,9 +92,10 @@ Actions.each do |action|
 	if !action[:configurable] then index+=1; next end
 	toRet << "<h4>" + action[:description] + "</h4>\n"
 	toRet << "<div>\n"
-	toRet << '<form class="ulmanager" id="ulm-f' +index.to_s+
+	toRet << '<form class="ulmanager" id="ulm-f'+index.to_s+
 		'" action="">'+"\n"
-	toRet << '<input type="text" id="ulm-tb'+index.to_s+'"/>'+"\n"
+	toRet << '<input type="text" class="lettersonly" id="ulm-tb'+
+			index.to_s+'"/>'+"\n"
 	toRet << '<button type="button" class="addphrase" id="ulm-b'+index.to_s+
 			'">Add Phrase</button>'+"\n"
 	toRet << '<br/>'+"\n"
