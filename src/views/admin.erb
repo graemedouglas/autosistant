@@ -26,6 +26,31 @@ $(function() {
  $( ".accordion" ).accordion();
 });
 </script>
+<!-- Add item off of list. -->
+<script>
+$(document).ready(function() {
+ $('.addphrase').live('click', function() {
+  var form = $(this).closest("form");
+  var list = form.children("ul").eq(0);
+  var textbox = form.children("input").eq(0);
+  var text = textbox.val();
+  textbox.attr('value', '');
+  if (text != '') {
+   list.append('<li>'+text+'<a href="" class="liLinkDelete">x</a></li>');
+   var div = form.closest("div");
+   div.fadeIn("slow", function() {
+    $(div).height('auto');
+   });
+  }
+})});
+</script>
+<!-- Remove item off of list. -->
+<script>
+$(document).ready(function() {
+ $('.liLinkDelete').live('click', function() {
+  $(this).closest('li').remove();
+})});
+</script>
 <style>
 .ui-tabs-vertical { width: 55em; }
 .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
@@ -33,6 +58,7 @@ $(function() {
 .ui-tabs-vertical .ui-tabs-nav li a { display:block; }
 .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
 .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
+ul { zoom:1; }
 </style>
 </head>
 <body>
@@ -50,11 +76,23 @@ $(function() {
 <div class="accordion">
 <%=
 toRet = ""
+index = 0
 Actions.each do |action|
 	toRet << "<h4>" + action[:description] + "</h4>\n"
 	toRet << "<div>\n"
-	toRet << "<p>WOAH CONTENT!</p>\n"
+	toRet << '<form class="ulmanager" id="ulm-f' +index.to_s+
+		'" action="">'+"\n"
+	toRet << '<input type="text" id="ulm-tb'+index.to_s+'"/>'+"\n"
+	toRet << '<button type="button" class="addphrase" id="ulm-b'+index.to_s+
+			'">Add Phrase</button>'+"\n"
+	toRet << '<br/>'+"\n"
+	toRet << '<input type="hidden" class="hid" id="hid" value="'+
+			index.to_s+'">'+"\n"
+	toRet << '<ul class="dynlist" id="ulm-ul'+index.to_s+'">'+"\n" 
+	toRet << '</ul>'+"\n"
+	toRet << '</form>'+"\n"
 	toRet << "</div>\n"
+	index+=1
 end
 toRet
 %>
