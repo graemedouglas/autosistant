@@ -15,20 +15,48 @@ The admin configuration page. Targets HTML5.
 	type="text/javascript"></script>
 <!-- Create tabs.  -->
 <script>
+
+var A_KEY = 65;
+var CTRL_KEY = 17;
+
 $(function() {
+	var validateLettersOnly = function(selector) {
+		var $elem = $(selector);
+		var replace = $elem.val().replace(/[^a-zA-Z]/, "");
+		return $elem.val(replace);
+	}
+
+	$(".lettersonly").keydown(function(e) {
+		if (e.which < 65 || e.which > 90)
+			e.preventDefault();
+		return true;
+	});
+
+	$(".lettersonly").keyup(function(e) {
+		if(
+			(e.ctrlKey && e.which === A_KEY)	
+				 || 
+			e.which === CTRL_KEY
+		)
+			return true;
+
+		validateLettersOnly(this);	
+		return true;
+	});
+
+	$(".lettersonly").bind("paste", function() {
+		var selector = this;
+        	setTimeout(function() {
+			validateLettersOnly(selector);	
+		}, 20);
+	});
+
  $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
  $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
-});
-</script>
-<!-- Create accordians.  -->
-<script>
-$(function() {
+ // Create accordions. 
  $( ".accordion" ).accordion();
-});
-</script>
-<!-- Add item off of list. -->
-<script>
-$(document).ready(function() {
+
+ // Add item off of list.
  var count = 1;
  $(document).on('click', '.addphrase', function() {
   var form = $(this).closest("form");
@@ -36,30 +64,22 @@ $(document).ready(function() {
   var textbox = form.children("input").eq(0);
   var text = textbox.val();
   textbox.attr('value', '');
-  if (text != '') {
-   list.append('<li>'+text+'<a href="#" class="liLinkDelete">x</a></li>');
-   var div = form.closest("div");
-   div.fadeIn("slow", function() {
-    $(div).height('auto');
-   });
-  }
-})});
-</script>
-<!-- Remove item off of list. -->
-<script>
-$(document).ready(function() {
+   if (text != '') {
+    list.append('<li>'+text+'<a href="#" class="liLinkDelete">x</a></li>');
+    var div = form.closest("div");
+    div.fadeIn("slow", function() {
+     $(div).height('auto');
+    });
+   }
+  })
+
+ // Remove item off of list. 
  $(document).on('click', '.liLinkDelete', function() {
   var li = $(this).closest('li');
   $(this).closest('li').remove();
-})});
-</script>
-<!-- Prevent specific characters from being typed. -->
-<script>
-$(document).ready(function() {
- $(document).on('change', '.lettersonly', function() {
-alert(this.value);
-  this.value = this.value.replace(/^[A-z]+/gim, "");
-})});
+ })
+});
+
 </script>
 <style>
 .ui-tabs-vertical { width: 55em; }
