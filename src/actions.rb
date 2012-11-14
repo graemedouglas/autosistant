@@ -35,7 +35,8 @@ remove both the question and the answer from their respective arrays.
 Once we either run out of choices or terminate, we attempt to match the
 remaining new identifiers on a first-come, first serve basis.
 =end
-Actions << Hash[:description, "Identify products.", :priority, 10, :code,
+Actions << Hash[:description, "Identify products.", :priority, 10,
+		:configurable, true, :code,
 lambda { |idents, user|
 ## TODO's
 #   Make it so the user can stop process and choose identified results
@@ -146,7 +147,9 @@ return (IdentCats.select { |row| row["id"] == nextq })[0]["question"], 1
 =begin
 Termination of highest priority level task.
 =end
-Actions << Hash[:description, "End immediate task.", :priority, -100, :code,
+Actions << Hash[:description, "End immediate task.", :priority, -100,
+		:configurable, true,
+		:code,
 lambda { |idents, user|
 # Remove this task and the task we intend to get rid of.
 2.times { user.tasks.shift }
@@ -157,7 +160,8 @@ return nil, 2
 =begin
 Show results of current search.
 =end
-Actions << Hash[:description, "Show results.", :priority, -100, :code,
+Actions << Hash[:description, "Show results.", :priority, -100,
+		:configurable, true, :code,
 lambda { |idents, user|
 
 tasklist = user.tasks
@@ -213,7 +217,8 @@ Choose items from a selection.  Desired items must be chosen with the quantity
 before the item.  Items must take the form p<number>.
 =end
 Actions << Hash[:description, "Choose products from list.", :priority, -101,
-		:code, lambda { |idents, user|
+		:configurable, false, :code,
+lambda { |idents, user|
 
 info = user.nextTask.info
 
@@ -245,7 +250,8 @@ return nil, 2
 Show the order information.
 =end
 Actions << Hash[:description, "Display order info", :priority, -102,
-		:code, lambda { |idents, user|
+		:configurable, true, :code,
+lambda { |idents, user|
 # Check if there are any products in the order.
 if user.emptyOrder?
 	return "You currently have no items in your order.", 2
@@ -271,7 +277,8 @@ return newmessage, 2
 Enter order information.
 =end
 Actions << Hash[:description, "Enter order information.", :priority, 100,
-		:code, lambda { |idents, user|
+		:configurable, true, :code,
+lambda { |idents, user|
 # Get the task information.
 info = user.nextTask.info
 
@@ -383,7 +390,8 @@ end
 Confirm order information
 =end
 Actions << Hash[:description, "Confirm order.", :priority, -1000,
-		:code, lambda { |idents, user|
+		:configurable, false, :code,
+lambda { |idents, user|
 # Look for yes/no response.
 if idents == nil or idents.empty?
 	return "Are you sure you want to place this order?", 1

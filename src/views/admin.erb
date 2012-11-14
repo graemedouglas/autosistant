@@ -37,7 +37,7 @@ $(document).ready(function() {
   var text = textbox.val();
   textbox.attr('value', '');
   if (text != '') {
-   list.append('<li id="li'+(count)+'">'+text+'<a href="#" id="a'+(count++)+'" class="liLinkDelete">x</a></li>');
+   list.append('<li>'+text+'<a href="#" class="liLinkDelete">x</a></li>');
    var div = form.closest("div");
    div.fadeIn("slow", function() {
     $(div).height('auto');
@@ -80,6 +80,8 @@ li { zoom:1 }
 toRet = ""
 index = 0
 Actions.each do |action|
+	# If we cannot configure the action, don't display it
+	if !action[:configurable] then index+=1; next end
 	toRet << "<h4>" + action[:description] + "</h4>\n"
 	toRet << "<div>\n"
 	toRet << '<form class="ulmanager" id="ulm-f' +index.to_s+
@@ -91,6 +93,13 @@ Actions.each do |action|
 	toRet << '<input type="hidden" class="hid" id="hid" value="'+
 			index.to_s+'">'+"\n"
 	toRet << '<ul class="dynlist" id="ulm-ul'+index.to_s+'">'+"\n" 
+	# Add current phrases from DB.
+	phrases = ConfigDB.execute("SELECT phrase FROM actionphrases WHERE "+
+					"aid=?", index)
+	phrases.each do |row|
+		toRet << '<li>'+row["phrase"]+
+			'<a href="#" class="liLinkDelete">x</a></li>'+"\n"
+	end
 	toRet << '</ul>'+"\n"
 	toRet << '</form>'+"\n"
 	toRet << "</div>\n"
