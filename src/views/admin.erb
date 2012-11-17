@@ -16,6 +16,48 @@ The admin configuration page. Targets HTML5.
 	type="text/javascript"></script>
 <script>
 
+// Send an ajax message to the server.
+function updateConfigurationAjax(changeSetP, jsondata){
+	var answer = confirm("Are you sure you want to commit these "+
+				"changes?");
+	// Only continue if answer is truthy.
+	if (answer) {
+		// Continue on.
+	} else { return true; }
+	
+	$.ajax({
+		type:	'POST',
+		url:	'/autosistant/admin/ajax',
+		data:	{
+				// TODO: Login-info or something?
+				changeSet:	changeSetP,
+				json:		jsondata
+			},
+		beforeSend:function(){
+			// TODO: Notify user about waiting for reply?
+		},
+		success:function(data){
+			// AJAX request made succesfully!
+			// Parse the JSON message.
+			var parsed = $.parseJSON(data);
+			alert(parsed.state);
+			
+			// Check if changes made stayed.
+			if (parsed.state == 1) {
+				alert("Changes made successfully!");
+			} else {
+				alert("Errors occured. The return status was: "+
+					parsed.state);
+			}
+		},
+		error:function(){
+			// AJAX Request failed!
+			alert('AJAX Failure: please try again!');
+		}
+	});
+};
+
+// Key codes for reference.
 var A_KEY = 65;
 var CTRL_KEY = 17;
 var BACKSPACE_KEY = 8;
@@ -36,6 +78,7 @@ Actions.each do |action|
 	end
 	index+=1
 end
+# Trim useless characters off.
 2.times{toRet.chop!}
 toRet << "]"
 toRet
@@ -43,7 +86,6 @@ toRet
 
 $(function() {
 /* TODO:
- * ** Move div auto size into its own place?
  * ** Maybe move all this JS to a seperate file, if possible?
 */
 	/// Try and prevent non-letters from being entered in certain textboxes
@@ -79,6 +121,7 @@ $(function() {
 			validateLettersOnly(selector);	
 		}, 20);
 	});
+	///
 
 	// Create UI Tabs.
 	$( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
@@ -127,7 +170,7 @@ $(function() {
 		} else if (found) {
 			alert('Cannot have two of the same phrase!');
 		}
-	})
+	});
 	
 	// Remove item off of a specific list. 
 	$(document).on('click', '.liLinkDelete', function() {
@@ -148,10 +191,14 @@ $(function() {
 		for (i = 0; i < actionlist.length; i++) {
 			if (actionlist[i].phrase == text) {
 				actionlist.splice(i, 1);
-				//break;
 			}
 		}
-	})
+	});
+	
+	// Send AJAX message on click for phrase updating.
+	$("#commitPhrases").click(function() {
+		updateConfigurationAjax("phrases", actionlist);
+	});
 });
 </script>
 <style>
@@ -210,6 +257,7 @@ end
 toRet
 %>
 </div>
+<button type="button" id="commitPhrases">Commit Changes to Phrases</button>
 </div>
 <div id="tabs-identcats">
 <h3>Identifier Category Configuration</h3>

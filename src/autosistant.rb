@@ -11,6 +11,7 @@ require 'rubygems'		# For Ruby version < 1.9
 require 'sinatra'		# Webframework to use
 require 'yaml'			# Required for serializing objects.
 require 'sqlite3'		# Require the database module we will use.
+require 'json'			# Needed to parse json.
 require './config.rb'		# System wide configuration options
 require './classes.rb'		# Various classes and classmods needed.
 require './actions.rb'		# System actions code.
@@ -146,7 +147,24 @@ get '/autosistant' do
 end
 
 get '/autosistant/admin' do
+	# TODO: Log-in.
 	erb :admin
+end
+
+post '/autosistant/admin/ajax' do
+	# TODO: Make sure Loged-in.
+	# Process changes to the configuration database.
+	changeSet = params[:changeSet]
+	if "phrases" == changeSet
+		# Parse incoming data.
+		#changes = JSON.parse(params[:json])
+		
+		# Return JSON message
+		"{\n\t\"state\":\"1\"\n}"
+	else
+		# Return JSON message with error state.
+		"{\n\t\"state\":\"-1\"\n}"
+	end
 end
 
 post '/autosistant-ajax' do
