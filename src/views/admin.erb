@@ -34,6 +34,7 @@ Actions.each do |action|
 		toRet << "aid: #{index}, phrase: \"#{row["phrase"]}\""
 		toRet << " }, "
 	end
+	index+=1
 end
 2.times{toRet.chop!}
 toRet << "]"
@@ -53,7 +54,7 @@ $(function() {
 	}
 
 	$(".lettersonly").keydown(function(e) {
-		if (e.which < 65 || e.which > 90)
+		if ((e.which < 65 || e.which > 90) && e.which != BACKSPACE_KEY)
 			e.preventDefault();
 		return true;
 	});
