@@ -40,7 +40,6 @@ function updateConfigurationAjax(changeSetP, jsondata){
 			// AJAX request made succesfully!
 			// Parse the JSON message.
 			var parsed = $.parseJSON(data);
-			alert(parsed.state);
 			
 			// Check if changes made stayed.
 			if (parsed.state == 1) {
@@ -177,8 +176,9 @@ $(function() {
 		// Get some necessary objects.
 		var $form = $(this).closest("form");
 		var $div = $(this).closest("div.autosized");
-		var $textbox = $form.children("input:text").eq(0);
-		var text = $textbox.val();
+		var text = $(this).closest("li").html();
+		// The following is a total hack... a terribe idea.
+		text = text.substring(0, text.indexOf('<'));
 		
 		$(this).closest('li').remove();
 		

@@ -156,8 +156,24 @@ post '/autosistant/admin/ajax' do
 	# Process changes to the configuration database.
 	changeSet = params[:changeSet]
 	if "phrases" == changeSet
-		# Parse incoming data.
-		#changes = JSON.parse(params[:json])
+		# Aparently, no need to parse the incoming data.  Its a hash!
+		changes = params[:json]
+		
+		# Get hash into a manageable form.  changes now an array.
+		changes = changes.flatten.select{|x| x.kind_of?(Hash)}
+		
+		# Start a database transaction to protect against lost.
+		ConfigDB.transaction do |db|
+			# Delete all values in this table.
+			db.execute("DELETE FROM actionphrases")
+			
+			# Insert each value into the database.
+			changes.each do |change|
+				db.execute("INSERT INTO actionphrases "+
+					"(aid, phrase) VALUES (?, ?)",
+					change["aid"].to_i, change["phrase"]);
+			end
+		end
 		
 		# Return JSON message
 		"{\n\t\"state\":\"1\"\n}"
