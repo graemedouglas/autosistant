@@ -43,7 +43,7 @@ toRet
 
 $(function() {
 /* TODO:
- * ** Change jquery object variable names to $<name> for clarity.
+ * ** Move div auto size into its own place?
  * ** Maybe move all this JS to a seperate file, if possible?
 */
 	/// Try and prevent non-letters from being entered in certain textboxes
@@ -92,12 +92,13 @@ $(function() {
 	var count = 1;
 	$(document).on('click', '.addphrase', function() {
 		// Get objects we need.
-		var form = $(this).closest("form");
-		var aid = form.children("input:hidden.hid").eq(0).val();
-		var list = form.children("ul").eq(0);
-		var textbox = form.children("input:text").eq(0);
-		var text = textbox.val();
- 		textbox.attr('value', '');
+		var $form = $(this).closest("form");
+		var $div = $(this).closest("div.autosized");
+		var aid = $form.children("input:hidden.hid").eq(0).val();
+		var $list = $form.children("ul").eq(0);
+		var $textbox = $form.children("input:text").eq(0);
+		var text = $textbox.val();
+ 		$textbox.attr('value', '');
 		
 		// Search to see if the new item already exists.
 		var found = false;
@@ -110,17 +111,18 @@ $(function() {
 		
 		// If this is a new, unique item, add it to the list.
 		if (text != '' && !found) {
-			list.append('<li>'+text+
+			$list.append('<li>'+text+
 				'<a href="#" class="liLinkDelete">x</a></li>');
-			var div = form.closest("div");
-			div.fadeIn("slow", function() {
-				$(div).height('auto');
-			});
 			var newitem = {
 				aid:	aid,
 				phrase:	text
 			};
 			actionlist.push(newitem);
+			
+			// Change div size.
+			$div.fadeIn("slow", function() {
+				$div.height('auto');
+			});
 		} else if (text == '') {
 		} else if (found) {
 			alert('Cannot have two of the same phrase!');
@@ -131,10 +133,16 @@ $(function() {
 	$(document).on('click', '.liLinkDelete', function() {
 		// Get some necessary objects.
 		var $form = $(this).closest("form");
+		var $div = $(this).closest("div.autosized");
 		var $textbox = $form.children("input:text").eq(0);
 		var text = $textbox.val();
 		
 		$(this).closest('li').remove();
+		
+		// Change div size.
+		$div.fadeIn("slow", function() {
+			$div.height('auto');
+		});
 		
 		// Delete any occurence in actionlist.
 		for (i = 0; i < actionlist.length; i++) {
@@ -176,7 +184,7 @@ Actions.each do |action|
 	# If we cannot configure the action, don't display it
 	if !action[:configurable] then index+=1; next end
 	toRet << "<h4>" + action[:description] + "</h4>\n"
-	toRet << "<div>\n"
+	toRet << '<div class="autosized">'+"\n"
 	toRet << '<form class="ulmanager" id="ulm-f'+index.to_s+
 		'" action="">'+"\n"
 	toRet << '<input type="text" class="lettersonly" id="ulm-tb'+
