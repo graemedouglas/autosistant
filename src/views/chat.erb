@@ -11,45 +11,52 @@ The chat client page. Targets HTML5.
 	type="text/javascript"></script>
 <script>
 // Make sure field is -1 on refresh.
-$(document).ready(function(){
- $('input#userid').attr('value', "-1");
-});
 $(window).load(function(){
- $('input#userid').attr('value', "-1");
+	$('input#userid').attr('value', "-1");
 });
-// AJAX code to send and receive chat messages.
-$(document).ready(function(){
- $("#ajaxsend").click(function(){
-  $.ajax({
-   type: 'POST',
-   url: '/autosistant-ajax',
-   data: {uid: $('input#userid').val(), message: $('textarea#message').val()
-    .replace(/\n/g, ' ') },
-   beforeSend:function(){
-     // Notify user about something that we waiting for a reply.
-   },
-   success:function(data){
-     // AJAX request made succesfully!
-     // Parse the JSON message.
-     var parsed = $.parseJSON(data);
-     // Add the sent message.
-     $('#chatarea').append("\nMe: "+$('textarea#message').val()
-      .replace(/\n/g, ' '));
-     // Add the message.
-     $('#chatarea').append("\nAgent: "+parsed.message);
-     // Set the userid.
-     $('input#userid').attr('value', parsed.uid);
-     // Clear the message area.
-     $('#message').attr('value', '');
-     // Move the scroll bar to the bottom
-     $('#chatarea').scrollTop($('#chatarea')[0].scrollHeight);
-   },
-   error:function(){
-     // AJAX Request failed!
-     $('#chatarea').append("\n\n AJAX FAILURE.  Send the message again!");
-   }
-  })
- })
+
+$(function() {
+	// Clear the user id value.
+	$('input#userid').attr('value', "-1");
+	
+	// Send message to the server.
+	$("#ajaxsend").click(function(){
+ 		$.ajax({
+  			type:	'POST',
+  			url:	'/autosistant-ajax',
+  			data:	{uid: $('input#userid').val(),
+				message: $('textarea#message').val()
+    					.replace(/\n/g, ' ')
+				},
+			beforeSend:function(){
+				// TODO: Notify user about waiting for reply?
+   			},
+			success:function(data){
+				// AJAX request made succesfully!
+				// Parse the JSON message.
+				var parsed = $.parseJSON(data);
+				// Add the sent message.
+				$('#chatarea')
+					.append("\nMe: "+$('textarea#message')
+						.val().replace(/\n/g, ' '));
+				// Add the message.
+				$('#chatarea')
+					.append("\nAgent: "+parsed.message);
+				// Set the userid.
+				$('input#userid').attr('value', parsed.uid);
+				// Clear the message area.
+				$('#message').attr('value', '');
+				// Move the scroll bar to the bottom
+				$('#chatarea').scrollTop($('#chatarea')[0]
+					.scrollHeight);
+			},
+			error:function(){
+				// AJAX Request failed!
+				$('#chatarea').append("\n\n AJAX FAILURE.  "
+					+"Send the message again!");
+			}
+		})
+	});
 });
 </script>
 </head>
