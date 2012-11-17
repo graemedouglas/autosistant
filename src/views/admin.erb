@@ -18,6 +18,7 @@ The admin configuration page. Targets HTML5.
 
 var A_KEY = 65;
 var CTRL_KEY = 17;
+var BACKSPACE_KEY = 8;
 
 /* Idea: For each action, have a list of original database values, list of
          database values to delete, and list of database values to add.
@@ -30,16 +31,21 @@ Actions.each do |action|
 					"aid=?", index)
 	phrases.each do |row|
 		toRet << "{ "
-		toRet << "aid: #{index}, phrase: #{row["phrase"]}"
+		toRet << "aid: #{index}, phrase: \"#{row["phrase"]}\""
 		toRet << " }, "
 	end
 end
-2.times{toRet.pop}
+2.times{toRet.chop!}
 toRet << "]"
 toRet
 %>;
 
 $(function() {
+/* TODO:
+ * ** Change jquery object variable names to $<name> for clarity.
+ * ** Maybe move all this JS to a seperate file, if possible?
+*/
+	/// Try and prevent non-letters from being entered in certain textboxes
 	var validateLettersOnly = function(selector) {
 		var $elem = $(selector);
 		var replace = $elem.val().replace(/[^a-zA-Z]/, "");
@@ -55,8 +61,10 @@ $(function() {
 	$(".lettersonly").keyup(function(e) {
 		if(
 			(e.ctrlKey && e.which === A_KEY)	
-				 || 
-			e.which === CTRL_KEY
+				|| 
+			(e.which === CTRL_KEY)
+				||
+			(e.which === BACKSPACE_KEY)
 		)
 			return true;
 
@@ -71,46 +79,71 @@ $(function() {
 		}, 20);
 	});
 
- // Tabs.
- $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
- $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
- // Create accordions. 
- $( ".accordion" ).accordion();
-
- // Add item off of list.
- var count = 1;
- $(document).on('click', '.addphrase', function() {
-  var form = $(this).closest("form");
-  var list = form.children("ul").eq(0);
-  var textbox = form.children("input").eq(0);
-  var text = textbox.val();
-  textbox.attr('value', '');
-   var found = false;
-   for (i = 0; i < actionlist.length; i++) {
-    if (actionlist[i].phrase == text) {
-     bool = true;
-     break;
-    }
-   }
-   if (text != '' && !found) {
-    list.append('<li>'+text+'<a href="#" class="liLinkDelete">x</a></li>');
-    var div = form.closest("div");
-    div.fadeIn("slow", function() {
-     $(div).height('auto');
-    });
-   } else if (text == '') {
-   } else if (found) {
-    alert('Cannot have two of the same phrase!');
-   }
-  })
-
- // Remove item off of list. 
- $(document).on('click', '.liLinkDelete', function() {
-  var li = $(this).closest('li');
-  $(this).closest('li').remove();
- })
+	// Create UI Tabs.
+	$( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+	$( "#tabs li" ).removeClass( "ui-corner-top" )
+		.addClass( "ui-corner-left" );
+	
+	// Create accordions. 
+	$( ".accordion" ).accordion();
+	
+	// Add item to a specific list.
+	var count = 1;
+	$(document).on('click', '.addphrase', function() {
+		// Get objects we need.
+		var form = $(this).closest("form");
+		var aid = form.children("input:hidden.hid").eq(0).val();
+		var list = form.children("ul").eq(0);
+		var textbox = form.children("input:text").eq(0);
+		var text = textbox.val();
+ 		textbox.attr('value', '');
+		
+		// Search to see if the new item already exists.
+		var found = false;
+		for (i = 0; i < actionlist.length; i++) {
+			if (actionlist[i].phrase == text) {
+				found = true;
+				break;
+			}
+		}
+		
+		// If this is a new, unique item, add it to the list.
+		if (text != '' && !found) {
+			list.append('<li>'+text+
+				'<a href="#" class="liLinkDelete">x</a></li>');
+			var div = form.closest("div");
+			div.fadeIn("slow", function() {
+				$(div).height('auto');
+			});
+			var newitem = {
+				aid:	aid,
+				phrase:	text
+			};
+			actionlist.push(newitem);
+		} else if (text == '') {
+		} else if (found) {
+			alert('Cannot have two of the same phrase!');
+		}
+	})
+	
+	// Remove item off of a specific list. 
+	$(document).on('click', '.liLinkDelete', function() {
+		// Get some necessary objects.
+		var $form = $(this).closest("form");
+		var $textbox = $form.children("input:text").eq(0);
+		var text = $textbox.val();
+		
+		$(this).closest('li').remove();
+		
+		// Delete any occurence in actionlist.
+		for (i = 0; i < actionlist.length; i++) {
+			if (actionlist[i].phrase == text) {
+				actionlist.splice(i, 1);
+				//break;
+			}
+		}
+	})
 });
-
 </script>
 <style>
 .ui-tabs-vertical { width: 55em; }
@@ -150,7 +183,7 @@ Actions.each do |action|
 	toRet << '<button type="button" class="addphrase" id="ulm-b'+index.to_s+
 			'">Add Phrase</button>'+"\n"
 	toRet << '<br/>'+"\n"
-	toRet << '<input type="hidden" class="hid" id="hid" value="'+
+	toRet << '<input type="hidden" class="hid" value="'+
 			index.to_s+'">'+"\n"
 	toRet << '<ul class="dynlist" id="ulm-ul'+index.to_s+'">'+"\n" 
 	# Add current phrases from DB.
