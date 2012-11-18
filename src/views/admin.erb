@@ -56,6 +56,56 @@ function updateConfigurationAjax(changeSetP, jsondata){
 	});
 };
 
+// Send an ajax message to the server.
+function searchProducts(searchString){
+	$.ajax({
+		type:	'POST',
+		url:	'/autosistant/admin/ajax',
+		data:	{
+				changeSet:	"productsearch",
+				json:		searchString
+			},
+		beforeSend:function(){
+			// TODO: Notify user about waiting for reply?
+		},
+		success:function(data){
+			// AJAX request made succesfully!
+			// Parse the JSON message.
+			var parsed = $.parseJSON(data);
+			
+			// Check if changes made stayed.
+			if (parsed.state == 1) {
+				// Get the resultsul JQuery object.
+				var $resultsul = $("ul#prodsearchresults");
+				
+				// Remove all old results.
+				$resultsul.empty();
+				
+				// List matching products.
+				for (i = 0; i < parsed.results.length; i++) {
+					var newresult = '<li><a href="#" '
+						+'class="prodResultLink">'
+						+parsed.results[i].name
+						+'</a><form action="">'
+						+'<input type="hidden" '
+						+'class="hpid" value="'
+						+parsed.results[i].id+'">'
+						+'</form></li>';
+					$resultsul.append(newresult);
+				}
+				//TODO: make div fit.
+			} else {
+				alert("Errors occured. The return status was: "+
+					parsed.state);
+			}
+		},
+		error:function(){
+			// AJAX Request failed!
+			alert('AJAX Failure: please try again!');
+		}
+	});
+};
+
 // Key codes for reference.
 var A_KEY = 65;
 var CTRL_KEY = 17;
@@ -219,6 +269,14 @@ $(function() {
 		}
 		updateConfigurationAjax("phrases", actionlist);
 	});
+	
+	// Send AJAX message for product search.
+	$("#searchProducts").click(function() {
+		// Get the string in the textbox.
+		var tosearch = 
+			$(this).closest('form').children('input:text').val();
+		searchProducts(tosearch);
+	});
 });
 </script>
 <style>
@@ -280,13 +338,19 @@ end
 toRet
 %>
 </div>
-<button type="button" id="commitPhrases">Commit Changes to Phrases</button>
+<button type="button" id="commitPhrases">Commit Changes</button>
 </div>
 <div id="tabs-identcats">
 <h3>Identifier Category Configuration</h3>
 </div>
 <div id="tabs-products">
 <h3>Product Search Configuration</h3>
+<form id="searchprods" action="">
+<input type="text" id="prodSearch-tb">
+<button type="button" id="searchProducts">Search</button>
+<ul id="prodsearchresults">
+</ul>
+</form>
 </div>
 <div id="tabs-ordering">
 <h3>Order Process Configuration</h3>

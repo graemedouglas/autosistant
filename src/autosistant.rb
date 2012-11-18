@@ -181,6 +181,38 @@ post '/autosistant/admin/ajax' do
 		
 		# Return JSON message
 		"{\n\t\"state\":\"1\"\n}"
+	elsif "productsearch" == changeSet
+		# The string to eventually send back.
+		toRet = "{ \"state\": \"1\", \"results\": [ "
+		
+		# Get the search string.
+		toSearch = params[:json]
+		
+		# Conduct a product search.
+		#results = ProductDB.execute("SELECT * FROM product WHERE "+
+		#		"id = ? OR name LIKE %?%", toSearch, toSearch)
+		results = ProductDB.execute("SELECT * FROM product WHERE "+
+				"id = ? OR name LIKE ?", toSearch.to_i, 
+						'%'+toSearch+'%')
+		
+		gothits = false
+		# Process the results.
+		results.each do |row|
+p row
+			gothits = true
+			toRet << "{ "
+			toRet << "\"id\": \"#{row["id"]}\", "+
+				"\"name\": \"#{row["name"]}\""
+			toRet << " }, "
+        	end
+		if gothits
+			2.times{toRet.chop!}	# Remove last two characters.
+		end
+		toRet << " ] }"
+p toRet
+		
+		# Return the message.
+		toRet
 	else
 		# Return JSON message with error state.
 		"{\n\t\"state\":\"-1\"\n}"
