@@ -175,6 +175,10 @@ post '/autosistant/admin/ajax' do
 			end
 		end
 		
+		# Live update the ActionPhrases array.
+		newphrases = ConfigDB.execute("SELECT * FROM actionphrases")
+		ActionPhrases = newphrases
+		
 		# Return JSON message
 		"{\n\t\"state\":\"1\"\n}"
 	else
@@ -191,7 +195,7 @@ end
 
 get '/about' do
 	# TODO: Write this code!
-	"Graeme needs to write this code!"
+	"A research project by Graeme Douglas"
 end
 
 not_found do
