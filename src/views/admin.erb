@@ -197,6 +197,26 @@ $(function() {
 	
 	// Send AJAX message on click for phrase updating.
 	$("#commitPhrases").click(function() {
+		// Make sure there are no empty lists.
+		var message = "";
+		$("ul.dynlist").each(function() {
+			var $curul = $(this);
+			var title = $curul.closest("form")
+				.children("input:hidden.htitle").eq(0).val();
+			if ($curul.children("li").length == 0) {
+				// Add the title to the list.
+				if ("" == message) {
+					message += "The following actions "
+							+"have no phrases:\n\n";
+				}
+				message += title+"\n";
+			}
+		});
+		if ("" != message) {
+			alert(message+"\nPlease enter at least one phrase "
+				+"for each of these actions.");
+			return true;
+		}
 		updateConfigurationAjax("phrases", actionlist);
 	});
 });
@@ -230,7 +250,8 @@ index = 0
 Actions.each do |action|
 	# If we cannot configure the action, don't display it
 	if !action[:configurable] then index+=1; next end
-	toRet << "<h4>" + action[:description] + "</h4>\n"
+	toRet << '<h4 id="actiondesc'+index.to_s+'">'+action[:description]+
+		"</h4>\n"
 	toRet << '<div class="autosized">'+"\n"
 	toRet << '<form class="ulmanager" id="ulm-f'+index.to_s+
 		'" action="">'+"\n"
@@ -241,6 +262,8 @@ Actions.each do |action|
 	toRet << '<br/>'+"\n"
 	toRet << '<input type="hidden" class="hid" value="'+
 			index.to_s+'">'+"\n"
+	toRet << '<input type="hidden" class="htitle" value="'+
+			action[:description]+'">'+"\n"
 	toRet << '<ul class="dynlist" id="ulm-ul'+index.to_s+'">'+"\n" 
 	# Add current phrases from DB.
 	phrases = ConfigDB.execute("SELECT phrase FROM actionphrases WHERE "+
