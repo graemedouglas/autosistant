@@ -45,8 +45,8 @@ function updateConfigurationAjax(changeSetP, jsondata){
 			if (parsed.state == 1) {
 				alert("Changes made successfully!");
 			} else {
-				alert("Errors occured. The return status was: "+
-					parsed.state);
+				alert("Errors occurred. The return status was: "
+					+parsed.state);
 			}
 		},
 		error:function(){
@@ -95,8 +95,42 @@ function searchProducts(searchString){
 				}
 				//TODO: make div fit.
 			} else {
-				alert("Errors occured. The return status was: "+
-					parsed.state);
+				alert("Errors occurred. The return status was: "
+					+parsed.state);
+			}
+		},
+		error:function(){
+			// AJAX Request failed!
+			alert('AJAX Failure: please try again!');
+		}
+	});
+};
+
+// Get product configuration information.
+function getProductConfig(id){
+	$.ajax({
+		type:	'POST',
+		url:	'/autosistant/admin/ajax',
+		data:	{
+				changeSet:	"getProductConfig",
+				json:		id
+			},
+		beforeSend:function(){
+			// TODO: Notify user about waiting for reply?
+		},
+		success:function(data){
+			// AJAX request made succesfully!
+			// Parse the JSON message.
+			var parsed = $.parseJSON(data);
+			
+			// Check if changes made stayed.
+			if (parsed.state == 1) {
+				// Get needed objects.
+				var $prodform = $("form#searchprods");
+				console.log($prodform);
+			} else {
+				alert("Errors occurred. The return status was: "
+					+parsed.state);
 			}
 		},
 		error:function(){
@@ -271,11 +305,20 @@ $(function() {
 	});
 	
 	// Send AJAX message for product search.
-	$("#searchProducts").click(function() {
+	$(document).on('click', '#searchProducts', function() {
 		// Get the string in the textbox.
 		var tosearch = 
 			$(this).closest('form').children('input:text').val();
 		searchProducts(tosearch);
+	});
+	
+	// Send AJAX message for product configuration.
+	$(document).on('click', '.prodResultLink', function() {
+		// Get the string in the textbox.
+		var id = 
+			$(this).closest('li').children('form').eq(0)
+				.children('input:hidden.hpid').eq(0).val();
+		getProductConfig(id);
 	});
 });
 </script>

@@ -189,8 +189,6 @@ post '/autosistant/admin/ajax' do
 		toSearch = params[:json]
 		
 		# Conduct a product search.
-		#results = ProductDB.execute("SELECT * FROM product WHERE "+
-		#		"id = ? OR name LIKE %?%", toSearch, toSearch)
 		results = ProductDB.execute("SELECT * FROM product WHERE "+
 				"id = ? OR name LIKE ?", toSearch.to_i, 
 						'%'+toSearch+'%')
@@ -198,7 +196,6 @@ post '/autosistant/admin/ajax' do
 		gothits = false
 		# Process the results.
 		results.each do |row|
-p row
 			gothits = true
 			toRet << "{ "
 			toRet << "\"id\": \"#{row["id"]}\", "+
@@ -209,10 +206,32 @@ p row
 			2.times{toRet.chop!}	# Remove last two characters.
 		end
 		toRet << " ] }"
-p toRet
 		
 		# Return the message.
 		toRet
+	elsif "getProductConfig" == changeSet
+		# Get the id
+		pid = params[:id]
+		
+		# Prepare the return message.
+		toRet = "{ \"state\": \"1\", \"results\": [ "
+		
+		# Run the query.
+		results = ConfigDB.execute("SELECT * FROM "+
+				"identifiercategories I, "+
+				"productidentifiers P "+
+				"WHERE P.pid = ? AND P.icid = I.id",
+					pid)
+		
+		# Loop through the results, return JSON string.
+		gothits = false
+		results.each do |row|
+		end
+		if gothits
+			gothits = true
+			2.times{toRet.chop!}	# Remove last two characters.
+		end
+		toRet << " ] }"
 	else
 		# Return JSON message with error state.
 		"{\n\t\"state\":\"-1\"\n}"
