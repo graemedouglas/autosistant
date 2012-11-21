@@ -193,8 +193,8 @@ post '/autosistant/admin/ajax' do
 				"id = ? OR name LIKE ?", toSearch.to_i, 
 						'%'+toSearch+'%')
 		
-		gothits = false
 		# Process the results.
+		gothits = false
 		results.each do |row|
 			gothits = true
 			toRet << "{ "
@@ -218,7 +218,7 @@ post '/autosistant/admin/ajax' do
 		
 		# Run the query.
 		results = ConfigDB.execute("SELECT * FROM "+
-				"identifiercategories I, "+
+				"identifiercategories I RIGHT OUTER JOIN "+
 				"productidentifiers P "+
 				"WHERE P.pid = ? AND P.icid = I.id",
 					pid)
