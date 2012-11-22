@@ -1,7 +1,5 @@
 ################################################################################
 # Author:		Graeme Douglas
-# Create date:		2012/09/29
-# Modify date/time:	2012/09/29/15:48
 ##
 # The main execution script for the autosistant application.
 ################################################################################
@@ -211,27 +209,40 @@ post '/autosistant/admin/ajax' do
 		toRet
 	elsif "getProductConfig" == changeSet
 		# Get the id
-		pid = params[:id]
+		pid = params[:json]
 		
 		# Prepare the return message.
 		toRet = "{ \"state\": \"1\", \"results\": [ "
 		
 		# Run the query.
-		results = ConfigDB.execute("SELECT * FROM "+
-				"identifiercategories I RIGHT OUTER JOIN "+
+=begin
+=end
+		results = ConfigDB.execute("SELECT I.id, I.name, P.value FROM "+
+				"identifiercategories I LEFT OUTER JOIN "+
 				"productidentifiers P "+
 				"WHERE P.pid = ? AND P.icid = I.id",
-					pid)
+					pid.to_i)
 		
 		# Loop through the results, return JSON string.
 		gothits = false
 		results.each do |row|
+			gothits = true
+			toRet << "{ "
+			toRet << "\"id\": \"#{row["id"]}\", "+
+				"\"name\": \"#{row["name"]}\", "
+			if row["value"]
+				toRet << "\"value\": \"#{row["value"]}\""
+			else
+				toRet << "\"value\": \"\""
+			end
+			toRet << " }, "
 		end
 		if gothits
-			gothits = true
 			2.times{toRet.chop!}	# Remove last two characters.
 		end
 		toRet << " ] }"
+p toRet
+		toRet
 	else
 		# Return JSON message with error state.
 		"{\n\t\"state\":\"-1\"\n}"

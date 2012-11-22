@@ -16,6 +16,8 @@ The admin configuration page. Targets HTML5.
 	type="text/javascript"></script>
 <script>
 
+var prodPrev = {};
+
 // Send an ajax message to the server.
 function updateConfigurationAjax(changeSetP, jsondata){
 	var answer = confirm("Are you sure you want to commit these "+
@@ -127,7 +129,32 @@ function getProductConfig(id){
 			if (parsed.state == 1) {
 				// Get needed objects.
 				var $prodform = $("form#searchprods");
-				console.log($prodform);
+				
+				// Store the contents of the form.
+				prodPrev = $prodform.html();
+				
+				// Empty the form.
+				$prodform.empty()
+				
+				// Refill the form.
+				for (i = 0; i < parsed.results.length; i++) {
+					var id = parsed.results[i].id;
+					var name = parsed.results[i].name;
+					var value = parsed.results[i].value;
+					var newoption = '<label for="'
+							+name+'">'+name+
+							'</label>'+
+							'<input type="input"'+
+							'id="'+parsed.results[i]
+								.name+'">'+
+							'</input></br>'
+					$prodform.append(newoption);
+				}
+				$prodform.append('<a id="prodBack"href="#">'+
+						'Go Back</a>');
+				$prodform.append('<button type="button" '+
+						'id="commitProdConfig">'+
+						'Commit Changes</button>');
 			} else {
 				alert("Errors occurred. The return status was: "
 					+parsed.state);
@@ -319,6 +346,13 @@ $(function() {
 			$(this).closest('li').children('form').eq(0)
 				.children('input:hidden.hpid').eq(0).val();
 		getProductConfig(id);
+	});
+	
+	// Send AJAX message for product configuration.
+	$(document).on('click', '#prodBack', function() {
+		var $form = $(this).closest('form');
+		$form.empty();
+		$form.append(prodPrev);
 	});
 });
 </script>
