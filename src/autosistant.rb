@@ -215,8 +215,6 @@ post '/autosistant/admin/ajax' do
 		toRet = "{ \"state\": \"1\", \"results\": [ "
 		
 		# Run the query.
-=begin
-=end
 		results = ConfigDB.execute("SELECT I.id, I.name, P.value FROM "+
 				"identifiercategories I LEFT OUTER JOIN "+
 				"productidentifiers P "+
