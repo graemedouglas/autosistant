@@ -1,5 +1,3 @@
--Make sure quantity on list is correct (the number left in stock).
-	-Make this more clear.
 -Make sure a person can't order more than what is in stock.
 -Email confirmation, clear out staged orders every so often.
 	-If I can't send emails, change message.

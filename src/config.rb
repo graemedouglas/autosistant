@@ -1,9 +1,11 @@
 ################################################################################
 # Author:		Graeme Douglas
-# Create date:		2012/09/29
-# Last Modified:	2012/09/29/17:09
 ##
 # Configuration options for the project.
+################################################################################
+
+### Requires ###################################################################
+require 'thread'
 ################################################################################
 
 ### Databases ##################################################################
@@ -21,9 +23,12 @@ ActionPhrases = ConfigDB.execute("SELECT * FROM actionphrases;")
 IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
 ################################################################################
 
+### Mutexes ####################################################################
+UpdateQuantity = Mutex.new
+################################################################################
+
 ### System options #############################################################
 # The resellers name.
-# TODO: Get from DB.
 CompanyName = ConfigDB.execute("SELECT value FROM options WHERE key = ?",
 				'companyname')[0]["value"]
 NoreplyEmail = ConfigDB.execute("SELECT value FROM options WHERE key = ?",

@@ -196,7 +196,9 @@ toask = "These are the products I have identified:\\n"
 pids.length.times do |i|
 	row = ProductDB.execute(getproductsq, pids[i])[0]
 	next if row == nil
-	toask << "\\tp" + i.to_s + ":\\t " + row["name"] + "\\n"
+	toask << "\\tp" + i.to_s + ":\\t " + row["name"] + ". In stock: "+
+			row["qty"].to_s + ". Price: "+
+			"$#{'%.2f'%(row["price"].to_f/100)}\\n"
 end
 toask << "Which item(s) would you like to add to the order?"
 
@@ -223,15 +225,38 @@ lambda { |idents, user|
 info = user.nextTask.info
 
 lastqty = 1
+notsatisfied = []
 idents.each do |newident|
 	# If this string represents an item...
 	md = newident.match(/^p([0-9]*)$/i)
 	if md != nil and (md[1] =~ /^[-+]?[0-9]+$/ or md[0].kind_of?(Integer))
 		key = md[0].to_i
 		pid = info[:pids].delete_at(key)
-		user.updateOrder(pid, lastqty)
-		if lastqty != 1 then lastqty = 1 end
-	# If this string strictly represents 
+		
+		UpdateQuantity.synchronize {
+			# Check if we can satisfy quantity entered.
+			qtyr=ProductDB.execute("SELECT qty FROM product "+
+						"WHERE id = ?",
+						pid)
+			if qtyr != nil && qtyr.length > 0
+				# Get the quantity left.
+				qty = qtyr[0]["qty"]
+				
+				if qty < lastqty
+					notsatisfied << [key, pid]
+				else
+					qty-=lastqty
+					# We actually want to do the update on
+					# order placement... still to do.
+					#ProductDB.execute("UPDATE product SET"+
+					#		" qty = ? WHERE id = ?",
+					#		qty, pid)
+					user.updateOrder(pid, lastqty)
+					lastqty = 1
+				end
+			end
+		}
+	# If this string strictly represents an integer...
 	elsif newident =~ /^[-+]?[0-9]+$/
 		lastqty = newident.to_i
 		# TODO What if the user wants to delete items from order?!?
@@ -239,11 +264,20 @@ idents.each do |newident|
 	end
 end
 
+# Build up return message.
+toRet = nil
+if notsatisfied.length > 0
+	toRet = "The following items could not be added to the order:"
+	notsatisfied.each do |item|
+		toRet << "\\n\\tp"+item[0].to_s
+	end
+end
+
 # Remove this task
 user.tasks.shift
 newtask = Task.new(4, Actions[4][:priority], 4)
 user.addTask(newtask)
-return nil, 2
+return toRet, 2
 }]
 
 =begin
@@ -254,6 +288,9 @@ Actions << Hash[:description, "Display order info", :priority, -102,
 lambda { |idents, user|
 # Check if there are any products in the order.
 if user.emptyOrder?
+	# Remove this tasks
+	user.tasks.shift
+	
 	return "You currently have no items in your order.", 2
 end
 
