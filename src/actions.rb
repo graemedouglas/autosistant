@@ -38,8 +38,6 @@ remaining new identifiers on a first-come, first serve basis.
 Actions << Hash[:description, "Identify products.", :priority, 10,
 		:configurable, true, :code,
 lambda { |idents, user|
-## TODO's
-#   Make it so the user can stop process and choose identified results
 
 tasklist = user.tasks
 info = user.nextTask.info
@@ -61,11 +59,37 @@ questionq = "SELECT question FROM identifiercategories WHERE aid = ?"
 geticidsq = "SELECT DISTINCT icid FROM productidentifiers"
 getidsq = "SELECT DISTINCT pid FROM productidentifiers"
 
+# First remove all things that never make sense if this is special question.
+if info[:prevqname] != nil and
+   IdentCats.select{|row| row["name"] == info[:prevqname]}[0]["priority"] < 1
+	
+	todelete = []
+	# Try and find an ident to satisfy this question.
+	idents.each do |ident|
+		results = ConfigDB.execute("SELECT Q.value, Q.answer "+
+				"FROM identifiercategories I, questionpath Q "+
+				"WHERE I.name = ? and I.id = Q.key",
+					info[:prevqname])
+		results.each do |row|
+			if md = ident.match(/^#{row["answer"]}/i)
+				todelete << ident
+				info[:toask].delete(row["value"].to_i)
+			end
+		end
+	end
+	
+	# Delete idents no longer needed.
+	todelete.each{|d| idents.delete(d)}
+	
+	# Remove the question, move on.
+	info[:toask].delete_if{|k, v| v == info[:prevqname]}
+end
+
+
 # Have variable to track number of products identified.
 count1 = 0
 count2 = 0
 
-#require 'ruby-debug';debugger
 # Eliminate question if we have an identifier for it, and construct new query
 idents.each do |e|
 	# First get an initial count from last query
@@ -118,12 +142,15 @@ eliminator.each_index {|i| eliminator[i].delete_if {|k, v| k.kind_of?(Integer)}}
 eliminator.each_index {|i| eliminator[i] = eliminator[i].flatten}
 eliminator = eliminator.flatten
 eliminator.delete("icid")
+p info[:toask]
 info[:toask].each do |k, v|
-	if eliminator.include?(k)
+	if eliminator.include?(k) or
+	   IdentCats.select{|row| row["id"] == k}[0]["priority"].to_i < 1
 	else
 		info[:toask].delete(k)
 	end
 end
+p info[:toask]
 
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
@@ -135,8 +162,24 @@ if 1 == count1 or 1 == count2 or info[:toask].length == 0
 end
 
 # Choose the next question
+# Find highest priority item that is not of normal priority.
+minPriorityItem = nil
+info[:toask].keys.each do |key|
+	# We are guaranteed to get 1 result, so this is cool.
+	category = IdentCats.select{|row| row["id"] == key}[0]
+	
+	if minPriorityItem == nil or
+	   category["priority"].to_i < minPriorityItem["priority"].to_i
+		minPriorityItem = category
+	end
+end
 # TODO: ONLY TAKE RANDOM IF CONFIG SAYS TO!
-nextq = info[:toask].keys.sample
+p minPriorityItem["priority"].to_i
+if minPriorityItem["priority"].to_i < 1
+	nextq = minPriorityItem["id"].to_i
+else
+	nextq = info[:toask].keys.sample
+end
 
 # Setup previous information for next request
 info[:prevqname] = (IdentCats.select { |x| x['id'] == nextq })[0]['name']

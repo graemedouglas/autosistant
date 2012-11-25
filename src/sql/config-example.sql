@@ -9,16 +9,31 @@ INSERT INTO options (key, value) VALUES ('email_noreply',
 	'example@thisisntreal.com');
 
 -- Setup identifier categories.
-INSERT INTO identifiercategories (name, question)
-	VALUES ('option', 'Any general information you know about the product or the vehicle?');
-INSERT INTO identifiercategories (name, question)
-	VALUES ('called', 'What part are you looking for?');
-INSERT INTO identifiercategories (name, question)
-	VALUES ('year', 'What production year was this vehicle made in?');
-INSERT INTO identifiercategories (name, question)
-	VALUES ('make', 'What is the make of this vehicle?');
-INSERT INTO identifiercategories (name, question)
-	VALUES ('model', 'What is the model name of this vehicle?');
+INSERT INTO identifiercategories (name, question, priority)
+	VALUES ('vehiclespecific', 'Is this product vechicle specific?', 0);
+INSERT INTO identifiercategories (name, question, priority)
+	VALUES ('option', 'Any general information you know about the product or the vehicle?', 1);
+INSERT INTO identifiercategories (name, question, priority)
+	VALUES ('called', 'What do you call what you are looking for?', 1);
+INSERT INTO identifiercategories (name, question, priority)
+	VALUES ('year', 'What production year was this vehicle made in?', 1);
+INSERT INTO identifiercategories (name, question, priority)
+	VALUES ('make', 'Which company makes this product or the vechicle this product is for?', 1);
+INSERT INTO identifiercategories (name, question, priority)
+	VALUES ('model', 'What is the model name of this vehicle?', 1);
+
+-- Setup question path killing.
+INSERT INTO questionpath (key, value, answer)
+	VALUES ((SELECT id FROM identifiercategories
+			WHERE name = 'vehiclespecific'),
+		(SELECT id FROM identifiercategories WHERE name = 'year'),
+		'(yes|y)');
+INSERT INTO questionpath (key, value, answer)
+	VALUES ((SELECT id FROM identifiercategories
+			WHERE name = 'vehiclespecific'),
+		(SELECT id FROM identifiercategories WHERE name = 'model'),
+		'(yes|y)');
+
 
 -- Setup the actionphrases store.
 INSERT INTO actionphrases(phrase, aid)

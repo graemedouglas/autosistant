@@ -22,7 +22,19 @@ CREATE TABLE identifiercategories
 	id INTEGER PRIMARY KEY,
 	name TEXT,
 	question TEXT,
+	priority INTEGER,
 	UNIQUE (name)
+);
+
+-- Table used to change question paths based on answers given.
+CREATE TABLE questionpath
+(
+	id INTEGER PRIMARY KEY,
+	key INTEGER,
+	value INTEGER,
+	answer TEXT,
+	FOREIGN KEY(key) REFERENCES identifiercategories(id),
+	FOREIGN KEY(value) REFERENCES identifiercategories(id)
 );
 
 CREATE TABLE productidentifiers
