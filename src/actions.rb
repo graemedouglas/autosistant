@@ -270,7 +270,7 @@ idents.each do |newident|
 	# If this string represents an item...
 	md = newident.match(/^p([0-9]*)$/i)
 	if md != nil and (md[1] =~ /^[-+]?[0-9]+$/ or md[0].kind_of?(Integer))
-		key = md[0].to_i
+		key = md[0][1..-1].to_i
 		pid = info[:pids].delete_at(key)
 		
 		UpdateQuantity.synchronize {

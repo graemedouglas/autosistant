@@ -10,13 +10,13 @@ INSERT INTO product (name, price, qty)
 INSERT INTO product (name, price, qty)
 	VALUES ('1980 Toyota Hilux Windshield Wipers: Summer Edition', 1099, 2);
 INSERT INTO product (name, price, qty)
-	VALUES ('1980 Toyota Hilux Rear Drum Brakes', 10909, 10);
+	VALUES ('1980 Toyota Hilux Rear Heavy Duty Drum Brakes', 10909, 10);
 INSERT INTO product (name, price, qty)
 	VALUES ('1980 Toyota Hilux Front Disc Brakes', 7667, 4);
 INSERT INTO product (name, price, qty)
 	VALUES ('1980 Toyota Hilux Rear Drum Brakes', 8001, 7);
 INSERT INTO product (name, price, qty)
-	VALUES ('1980 Toyota MR2 Heavy Duty Winch', 60099, 0);
+	VALUES ('1980 Toyota Hilux Heavy Duty Winch', 60099, 0);
 INSERT INTO product (name, price, qty)
 	VALUES ('1985 Toyota MR2 Front Fender Set', 45000, 1);
 INSERT INTO product (name, price, qty)

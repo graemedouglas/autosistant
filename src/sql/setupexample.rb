@@ -12,6 +12,7 @@ puts system('sqlite3 ../sqlite/userstore.db < userstore.sql')
 
 # Run example setup scripts.
 puts system('sqlite3 ../sqlite/config.db < config-example.sql')
+puts system('sqlite3 ../sqlite/config.db < deep-config.sql')
 puts system('sqlite3 ../sqlite/product.db < product-example.sql')
 puts system('sqlite3 ../sqlite/product.db < deep-products.sql')
 

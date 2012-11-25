@@ -27,12 +27,12 @@ INSERT INTO questionpath (key, value, answer)
 	VALUES ((SELECT id FROM identifiercategories
 			WHERE name = 'vehiclespecific'),
 		(SELECT id FROM identifiercategories WHERE name = 'year'),
-		'(yes|y)');
+		'(no|n)');
 INSERT INTO questionpath (key, value, answer)
 	VALUES ((SELECT id FROM identifiercategories
 			WHERE name = 'vehiclespecific'),
 		(SELECT id FROM identifiercategories WHERE name = 'model'),
-		'(yes|y)');
+		'(no|n)');
 
 
 -- Setup the actionphrases store.
