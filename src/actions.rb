@@ -96,7 +96,8 @@ idents.each do |e|
 	count1 = ConfigDB.execute(countq + info[:querypred])[0]["count"]
 	# Get the positive difference.
 	count2 = ConfigDB.execute(countq + info[:querypred] +
-		" AND (icid = ? AND value = ?)", info[:prevq], e)[0]["count"]
+		" AND (icid = ? AND value LIKE ?)", info[:prevq],
+		'%'+e+'%')[0]["count"]
 	if count1 - count2 > 0 and count2 > 0
 		# Delete previous question from toask list if its not 'option'
 		# TODO: Make this more efficient?
@@ -104,8 +105,10 @@ idents.each do |e|
 			info[:prevq]==k && v != "option"
 		end
 		# TODO: Come up with a way to prevent SQL Injections
-		info[:querypred] << " AND (icid = " + info[:toask][:prevq]
-			+ " AND value = '" + e + "')"
+		info[:querypred] << " AND (icid = " +info[:prevq].to_s+
+			" AND value LIKE '%" + e + "%')"
+p "!!!!!!!!!!"
+p info[:querypred]
 		# Remove all occurences values from idents.
 		idents.delete(e)
 		break
@@ -119,7 +122,8 @@ idents.each do |e|
 		count1 = ConfigDB.execute(countq +
 			info[:querypred])[0]["count"]
 		count2 = ConfigDB.execute(countq + info[:querypred] +
-			" AND (icid = ? AND value = ?)", id, e)[0]["count"]
+			" AND (icid = ? AND value LIKE ?)", id,
+			'%'+e+'%')[0]["count"]
 		# If we made any progress, pair them up, eliminate queries.
 		if count1 - count2 > 0 and count2 > 0
 			# TODO: Make this more efficient?
@@ -128,7 +132,7 @@ idents.each do |e|
 			end
 			# TODO: Prevent sql injections.
 			info[:querypred] << " AND (icid = " + id.to_s +
-				" AND value = '" + e + "')"
+				" AND value LIKE '%" + e + "%')"
 			# Remove all occurences value from new_idents.
 			idents.delete(e)
 			break
@@ -180,6 +184,7 @@ end
 
 # Setup previous information for next request
 info[:prevqname] = (IdentCats.select { |x| x['id'] == nextq })[0]['name']
+info[:prevq] = nextq
 # Return the question
 return (IdentCats.select { |row| row["id"] == nextq })[0]["question"], 1
 }]
