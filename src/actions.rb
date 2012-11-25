@@ -44,7 +44,7 @@ info = user.nextTask.info
 
 # Some initial setup
 if info[:querypred] == nil
-	info[:querypred] = " WHERE 1=1"
+	info[:querypred] = ""
 	# Get the questions to ask.
 	info[:toask] = Hash.new
 	IdentCats.each do |row|
@@ -56,7 +56,8 @@ end
 # Queries we will reference several times throughout procedure.
 countq = "SELECT COUNT(DISTINCT pid) AS count FROM productidentifiers"
 questionq = "SELECT question FROM identifiercategories WHERE aid = ?"
-geticidsq = "SELECT DISTINCT icid FROM productidentifiers"
+geticidsq = "SELECT DISTINCT icid FROM productidentifiers WHERE "+
+		"pid = (SELECT DISTINCT pid FROM productidentifiers"
 getidsq = "SELECT DISTINCT pid FROM productidentifiers"
 
 # First remove all things that never make sense if this is special question.
@@ -85,19 +86,29 @@ if info[:prevqname] != nil and
 	info[:toask].delete_if{|k, v| v == info[:prevqname]}
 end
 
+# We will store the results of a query here.
+results1 = nil
+results2 = nil
 
 # Have variable to track number of products identified.
-count1 = 0
-count2 = 0
+count1 = 0	# Count with previous query.
+count2 = 0	# Count with new proposed query.
 
 # Eliminate question if we have an identifier for it, and construct new query
 idents.each do |e|
 	# First get an initial count from last query
 	count1 = ConfigDB.execute(countq + info[:querypred])[0]["count"]
+	
 	# Get the positive difference.
-	count2 = ConfigDB.execute(countq + info[:querypred] +
-		" AND (icid = ? AND value LIKE ?)", info[:prevq],
-		'%'+e+'%')[0]["count"]
+	if info[:querypred] == ""
+		count2 = ConfigDB.execute(countq + info[:querypred] +
+			" WHERE (icid = ? AND value LIKE ?)", info[:prevq],
+			'%'+e+'%')[0]["count"]
+	else
+		count2 = ConfigDB.execute(countq + info[:querypred] +
+			" AND (icid = ? AND value LIKE ?)", info[:prevq],
+			'%'+e+'%')[0]["count"]
+	end
 	if count1 - count2 > 0 and count2 > 0
 		# Delete previous question from toask list if its not 'option'
 		# TODO: Make this more efficient?
@@ -105,10 +116,16 @@ idents.each do |e|
 			info[:prevq]==k && v != "option"
 		end
 		# TODO: Come up with a way to prevent SQL Injections
-		info[:querypred] << " AND (icid = " +info[:prevq].to_s+
-			" AND value LIKE '%" + e + "%')"
+		if info[:querypred] == ""
+			info[:querypred] << " WHERE (icid = "+
+				info[:prevq].to_s+
+				" AND value LIKE '%" + e + "%')"
+		else
+			info[:querypred] << " AND (icid = " +info[:prevq].to_s+
+				" AND value LIKE '%" + e + "%')"
+		end
 		# Remove all occurences values from idents.
-		idents.delete(e)
+		#idents.delete(e)
 		break
 	end
 end
@@ -119,9 +136,15 @@ idents.each do |e|
 		# First get the number of items we currently identify.
 		count1 = ConfigDB.execute(countq +
 			info[:querypred])[0]["count"]
-		count2 = ConfigDB.execute(countq + info[:querypred] +
-			" AND (icid = ? AND value LIKE ?)", id,
-			'%'+e+'%')[0]["count"]
+		if info[:querypred] == ""
+			count2 = ConfigDB.execute(countq + info[:querypred]+
+				" WHERE (icid = ? AND value LIKE ?)", id,
+				'%'+e+'%')[0]["count"]
+		else
+			count2 = ConfigDB.execute(countq + info[:querypred]+
+				" AND (icid = ? AND value LIKE ?)", id,
+				'%'+e+'%')[0]["count"]
+		end
 		# If we made any progress, pair them up, eliminate queries.
 		if count1 - count2 > 0 and count2 > 0
 			# TODO: Make this more efficient?
@@ -129,18 +152,28 @@ idents.each do |e|
 				k==id && v != "option"
 			end
 			# TODO: Prevent sql injections.
-			info[:querypred] << " AND (icid = " + id.to_s +
-				" AND value LIKE '%" + e + "%')"
+			if info[:querypred] == ""
+				info[:querypred] << " WHERE (icid = "+id.to_s+
+					" AND value LIKE '%" + e + "%')"
+			else
+				info[:querypred] << " AND (icid = "+id.to_s+
+					" AND value LIKE '%" + e + "%')"
+			end
 			# Remove all occurences value from new_idents.
-			idents.delete(e)
+			#idents.delete(e)
 			break
 		end
 	end
 end
 
 # Eliminate all questions that no longer make sense.
-eliminator = ConfigDB.execute(geticidsq + info[:querypred])
+p "Query predicate: #{info[:querypred]}"
+eliminator = ConfigDB.execute(geticidsq + info[:querypred] + ")")
 eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
+if info[:prevq] != 0
+	eliminator.delete_at(info[:prevq])
+end
+p "Eliminator: #{eliminator}"
 info[:toask].each do |k, v|
 	if eliminator.include?(k) or
 	   IdentCats.select{|row| row["id"] == k}[0]["priority"].to_i < 1
@@ -150,6 +183,10 @@ info[:toask].each do |k, v|
 	end
 end
 
+p "####1"
+p info[:toask].length
+p count1
+p count2
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
 	info[:results] = ConfigDB.execute(getidsq + info[:querypred])

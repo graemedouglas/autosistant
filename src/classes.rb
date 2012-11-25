@@ -35,6 +35,61 @@ class Array
 		return toret
 	end
 end
+### String modifications ###
+class String
+	### These next two methods are taken from Wikibooks algorithm
+	### implementation.
+	# Longest comm
+	def longest_common_substring(s2)
+		m = Array.new(s2.length){ [0] * s1.length }
+		longest, x_longest = 0,0
+		(1 .. 1 + s1.length).each do |x|
+			(1 .. 1 + s2.length).each do |y|
+				if s1[x-1] == s2[y-1]
+					m[x][y] = m[x-1][y-1] + 1
+					if m[x][y] > longest
+						longest = m[x][y]
+						x_longest = x
+					else
+						m[x][y] = 0
+					end
+				end
+			end
+		end
+		s1[x_longest - longest .. x_longest]
+	end
+	
+	# The longest common subsequence of two strings.
+	def subsequence(s2)
+		s1 = self
+		return 0 if s1.empty? or s2.empty? or !s2.kind_of?(String)
+		 
+		num=Array.new(s1.size){Array.new(s2.size)}
+		s1.scan(/./).each_with_index{|letter1,i|
+		s2.scan(/./).each_with_index{|letter2,j|
+			 
+			if s1[i]==s2[j]
+				if i==0||j==0
+					num[i][j] = 1
+				else
+					num[i][j]  = 1 + num[i - 1][ j - 1]
+				end
+			else
+				if i==0 && j==0
+					num[i][j] = 0
+				elsif i==0 &&  j!=0  #First ith element
+					num[i][j] = [0,  num[i][j - 1]].max
+				elsif j==0 && i!=0  #First jth element
+					num[i][j] = [0, num[i - 1][j]].max
+				elsif i != 0 && j!= 0
+					num[i][j] = [num[i - 1][j],
+							num[i][j - 1]].max
+				end
+			end
+		}}
+        num[s1.length - 1][s2.length - 1]
+	end
+end
 ################################################################################
 ### Task ###
 class Task
