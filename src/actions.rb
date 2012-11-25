@@ -140,13 +140,11 @@ end
 
 # Eliminate all questions that no longer make sense.
 eliminator = ConfigDB.execute(geticidsq + info[:querypred])
-eliminator.each_index {|i| eliminator[i].delete_if {|k, v| k.kind_of?(Integer)}}
-eliminator.each_index {|i| eliminator[i] = eliminator[i].flatten}
-eliminator = eliminator.flatten
-eliminator.delete("icid")
+eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
 info[:toask].each do |k, v|
 	if eliminator.include?(k) or
 	   IdentCats.select{|row| row["id"] == k}[0]["priority"].to_i < 1
+		# These are the things we keep.
 	else
 		info[:toask].delete(k)
 	end
