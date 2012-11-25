@@ -107,8 +107,6 @@ idents.each do |e|
 		# TODO: Come up with a way to prevent SQL Injections
 		info[:querypred] << " AND (icid = " +info[:prevq].to_s+
 			" AND value LIKE '%" + e + "%')"
-p "!!!!!!!!!!"
-p info[:querypred]
 		# Remove all occurences values from idents.
 		idents.delete(e)
 		break
