@@ -142,7 +142,6 @@ eliminator.each_index {|i| eliminator[i].delete_if {|k, v| k.kind_of?(Integer)}}
 eliminator.each_index {|i| eliminator[i] = eliminator[i].flatten}
 eliminator = eliminator.flatten
 eliminator.delete("icid")
-p info[:toask]
 info[:toask].each do |k, v|
 	if eliminator.include?(k) or
 	   IdentCats.select{|row| row["id"] == k}[0]["priority"].to_i < 1
@@ -150,7 +149,6 @@ info[:toask].each do |k, v|
 		info[:toask].delete(k)
 	end
 end
-p info[:toask]
 
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
@@ -174,7 +172,6 @@ info[:toask].keys.each do |key|
 	end
 end
 # TODO: ONLY TAKE RANDOM IF CONFIG SAYS TO!
-p minPriorityItem["priority"].to_i
 if minPriorityItem["priority"].to_i < 1
 	nextq = minPriorityItem["id"].to_i
 else
