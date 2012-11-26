@@ -2,8 +2,34 @@
 require 'resolv'
 require 'pony'
 ################################################################################
-
 ### Functions ##################################################################
+# Heuristic for killing results that are not useful.
+def heuristicFilter(results, str)
+	# Get into manageable form
+p results
+p "!!!!!!!!!!!"
+	results.each_index do |i|
+		score = str.subsequence(results[i]['value']).to_f/
+				results[i]['value'].length.to_f
+p "str: #{str}"
+p "result: #{results[i]["value"]}"
+p "score: #{score}"
+		if score < 0.66
+			results.delete_at(i)
+		end
+	end
+end
+def countUniqueProducts(results)
+	count = 0
+	seen = []
+	results.each do |row|
+		if !seen.include?(row["pid"])
+			seen << row["pid"]
+			count+=1
+		end
+	end
+	return count
+end
 # Return an array of integers, signalling which question priority to skip to.
 def processSkipHint(skiphint)
 	if !skiphint.kind_of?(String)
@@ -53,9 +79,10 @@ if info[:querypred] == nil
 	info[:prevq] = 0
 end
 
+info[:prevqmatched] = false
+
 # Queries we will reference several times throughout procedure.
-countq = "SELECT COUNT(DISTINCT pid) AS count FROM productidentifiers"
-questionq = "SELECT question FROM identifiercategories WHERE aid = ?"
+countq = "SELECT DISTINCT pid, value FROM productidentifiers"
 geticidsq = "SELECT DISTINCT icid FROM productidentifiers WHERE "+
 		"pid = (SELECT DISTINCT pid FROM productidentifiers"
 getidsq = "SELECT DISTINCT pid FROM productidentifiers"
@@ -97,18 +124,22 @@ count2 = 0	# Count with new proposed query.
 # Eliminate question if we have an identifier for it, and construct new query
 idents.each do |e|
 	# First get an initial count from last query
-	count1 = ConfigDB.execute(countq + info[:querypred])[0]["count"]
+	results1 = ConfigDB.execute(countq + info[:querypred])
+	count1 = countUniqueProducts(results1)
 	
 	# Get the positive difference.
 	if info[:querypred] == ""
-		count2 = ConfigDB.execute(countq + info[:querypred] +
+		results2 = ConfigDB.execute(countq + info[:querypred] +
 			" WHERE (icid = ? AND value LIKE ?)", info[:prevq],
-			'%'+e+'%')[0]["count"]
+			'%'+e+'%')
 	else
-		count2 = ConfigDB.execute(countq + info[:querypred] +
-			" AND (icid = ? AND value LIKE ?)", info[:prevq],
-			'%'+e+'%')[0]["count"]
+		results2 = ConfigDB.execute(countq + info[:querypred] +
+			" OR (icid = ? AND value LIKE ?)", info[:prevq],
+			'%'+e+'%')
 	end
+	heuristicFilter(results2, e)
+	count2 = countUniqueProducts(results2)
+	
 	if count1 - count2 > 0 and count2 > 0
 		# Delete previous question from toask list if its not 'option'
 		# TODO: Make this more efficient?
@@ -121,9 +152,13 @@ idents.each do |e|
 				info[:prevq].to_s+
 				" AND value LIKE '%" + e + "%')"
 		else
-			info[:querypred] << " AND (icid = " +info[:prevq].to_s+
+			info[:querypred] << " OR (icid = " +info[:prevq].to_s+
 				" AND value LIKE '%" + e + "%')"
 		end
+		
+		# Set flag to remove previous question.
+		info[:prevqmatched] = true
+		
 		# Remove all occurences values from idents.
 		#idents.delete(e)
 		break
@@ -133,18 +168,23 @@ end
 # Now we will attempt to match any other words with whatever we can
 idents.each do |e|
 	info[:toask].keys.each do |id|
+		next if id == info[:prevq]
 		# First get the number of items we currently identify.
-		count1 = ConfigDB.execute(countq +
-			info[:querypred])[0]["count"]
+		results1 = ConfigDB.execute(countq +
+			info[:querypred])
+		count1 = countUniqueProducts(results1)
 		if info[:querypred] == ""
-			count2 = ConfigDB.execute(countq + info[:querypred]+
+			results2 = ConfigDB.execute(countq + info[:querypred]+
 				" WHERE (icid = ? AND value LIKE ?)", id,
-				'%'+e+'%')[0]["count"]
+				'%'+e+'%')
 		else
-			count2 = ConfigDB.execute(countq + info[:querypred]+
-				" AND (icid = ? AND value LIKE ?)", id,
-				'%'+e+'%')[0]["count"]
+			results2 = ConfigDB.execute(countq + info[:querypred]+
+				" OR (icid = ? AND value LIKE ?)", id,
+				'%'+e+'%')
 		end
+		heuristicFilter(results2, e)
+		count2 = countUniqueProducts(results2)
+		
 		# If we made any progress, pair them up, eliminate queries.
 		if count1 - count2 > 0 and count2 > 0
 			# TODO: Make this more efficient?
@@ -156,7 +196,7 @@ idents.each do |e|
 				info[:querypred] << " WHERE (icid = "+id.to_s+
 					" AND value LIKE '%" + e + "%')"
 			else
-				info[:querypred] << " AND (icid = "+id.to_s+
+				info[:querypred] << " OR (icid = "+id.to_s+
 					" AND value LIKE '%" + e + "%')"
 			end
 			# Remove all occurences value from new_idents.
@@ -170,8 +210,8 @@ end
 p "Query predicate: #{info[:querypred]}"
 eliminator = ConfigDB.execute(geticidsq + info[:querypred] + ")")
 eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
-if info[:prevq] != 0
-	eliminator.delete_at(info[:prevq])
+if info[:prevq] != 0 and info[:prevqmatched]
+	eliminator.delete(info[:prevq])
 end
 p "Eliminator: #{eliminator}"
 info[:toask].each do |k, v|
