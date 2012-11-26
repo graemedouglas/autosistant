@@ -83,7 +83,7 @@ info = user.nextTask.info
 countq = "SELECT DISTINCT pid FROM productidentifiers"
 heuristicq = "SELECT DISTINCT pid, icid, value FROM productidentifiers"
 geticidsq = "SELECT DISTINCT icid FROM productidentifiers WHERE "+
-		"pid = (SELECT DISTINCT pid FROM productidentifiers"
+		"pid IN ( "
 
 # Some initial setup
 if info[:query] == nil
@@ -96,7 +96,6 @@ if info[:query] == nil
 	info[:prevq] = 0
 end
 
-p info[:query]
 info[:prevqmatched] = false
 
 # First remove all things that never make sense if this is special question.
@@ -124,8 +123,6 @@ if info[:prevqname] != nil and
 	# Remove the question, move on.
 	info[:toask].delete_if{|k, v| v == info[:prevqname]}
 end
-
-p "********* Made it 1"
 
 # We will store the results of a query here.
 results1 = nil
@@ -204,14 +201,13 @@ idents.each do |e|
 end
 
 =begin
+=end
 # Eliminate all questions that no longer make sense.
-p "Query: #{info[:query]}"
-eliminator = ConfigDB.execute(geticidsq + info[:query] +")")
+eliminator = ConfigDB.execute(geticidsq + info[:query] + ")")
 eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
 if info[:prevq] != 0 and info[:prevqmatched]
 	eliminator.delete(info[:prevq])
 end
-p "Eliminator: #{eliminator}"
 info[:toask].each do |k, v|
 	if eliminator.include?(k) or
 	   IdentCats.select{|row| row["id"] == k}[0]["priority"].to_i < 1
@@ -220,12 +216,7 @@ info[:toask].each do |k, v|
 		info[:toask].delete(k)
 	end
 end
-=end
 
-p "####1"
-p info[:toask].length
-p count1
-p count2
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
 	info[:results] = ConfigDB.execute(info[:query])
