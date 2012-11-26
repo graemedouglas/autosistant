@@ -6,19 +6,11 @@ require 'pony'
 # Heuristic for killing results that are not useful.
 def heuristicFilter(results, str)
 	# Get into manageable form
-p results
-p "!!!!!!!!!!!"
-	results.each_index do |i|
-		score = str.subsequence(results[i]['value']).to_f/
-				results[i]['value'].length.to_f
-p "str: #{str}"
-p "result: #{results[i]["value"]}"
-p "score: #{score}"
-		if score < 0.66
-			results.delete_at(i)
-		end
+	results.delete_if do |v|
+		str.subsequence(v['value']).to_f/v['value'].length.to_f < 0.66
 	end
 end
+# Get ICIDs from the results.
 def getICIDsFromResults(results)
 	seen = []
 	results.each do |row|
@@ -26,8 +18,6 @@ def getICIDsFromResults(results)
 			seen << row["icid"]
 		end
 	end
-p "$$$$$$$$$$$$$"
-p seen
 	return seen
 end
 def countUniqueProducts(results)
@@ -205,6 +195,8 @@ end
 # Eliminate all questions that no longer make sense.
 eliminator = ConfigDB.execute(geticidsq + info[:query] + ")")
 eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
+p "eliminator #{eliminator}"
+p "query #{info[:query]}"
 if info[:prevq] != 0 and info[:prevqmatched]
 	eliminator.delete(info[:prevq])
 end

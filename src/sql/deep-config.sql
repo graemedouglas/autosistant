@@ -75,7 +75,7 @@ INSERT INTO productidentifiers(pid, icid, value)
 	       '1980');
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (7, (SELECT id FROM identifiercategories WHERE name = 'called'),
-	       'brake cable');
+	       'windshield wipers');
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (7, (SELECT id FROM identifiercategories WHERE name = 'option'),
 	       'summer');
