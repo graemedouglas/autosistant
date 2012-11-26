@@ -19,6 +19,17 @@ p "score: #{score}"
 		end
 	end
 end
+def getICIDsFromResults(results)
+	seen = []
+	results.each do |row|
+		if !seen.include?(row["icid"])
+			seen << row["icid"]
+		end
+	end
+p "$$$$$$$$$$$$$"
+p seen
+	return seen
+end
 def countUniqueProducts(results)
 	count = 0
 	seen = []
@@ -68,9 +79,15 @@ lambda { |idents, user|
 tasklist = user.tasks
 info = user.nextTask.info
 
+# Queries we will reference several times throughout procedure.
+countq = "SELECT DISTINCT pid FROM productidentifiers"
+heuristicq = "SELECT DISTINCT pid, icid, value FROM productidentifiers"
+geticidsq = "SELECT DISTINCT icid FROM productidentifiers WHERE "+
+		"pid = (SELECT DISTINCT pid FROM productidentifiers"
+
 # Some initial setup
-if info[:querypred] == nil
-	info[:querypred] = ""
+if info[:query] == nil
+	info[:query] = String.new(countq)
 	# Get the questions to ask.
 	info[:toask] = Hash.new
 	IdentCats.each do |row|
@@ -79,13 +96,8 @@ if info[:querypred] == nil
 	info[:prevq] = 0
 end
 
+p info[:query]
 info[:prevqmatched] = false
-
-# Queries we will reference several times throughout procedure.
-countq = "SELECT DISTINCT pid, value FROM productidentifiers"
-geticidsq = "SELECT DISTINCT icid FROM productidentifiers WHERE "+
-		"pid = (SELECT DISTINCT pid FROM productidentifiers"
-getidsq = "SELECT DISTINCT pid FROM productidentifiers"
 
 # First remove all things that never make sense if this is special question.
 if info[:prevqname] != nil and
@@ -113,6 +125,8 @@ if info[:prevqname] != nil and
 	info[:toask].delete_if{|k, v| v == info[:prevqname]}
 end
 
+p "********* Made it 1"
+
 # We will store the results of a query here.
 results1 = nil
 results2 = nil
@@ -124,21 +138,20 @@ count2 = 0	# Count with new proposed query.
 # Eliminate question if we have an identifier for it, and construct new query
 idents.each do |e|
 	# First get an initial count from last query
-	results1 = ConfigDB.execute(countq + info[:querypred])
-	count1 = countUniqueProducts(results1)
+	results1 = ConfigDB.execute(info[:query])
+	count1 = countUniqueProducts(results1)#TODO: Unnecessary?
 	
-	# Get the positive difference.
-	if info[:querypred] == ""
-		results2 = ConfigDB.execute(countq + info[:querypred] +
-			" WHERE (icid = ? AND value LIKE ?)", info[:prevq],
-			'%'+e+'%')
-	else
-		results2 = ConfigDB.execute(countq + info[:querypred] +
-			" OR (icid = ? AND value LIKE ?)", info[:prevq],
-			'%'+e+'%')
-	end
+	results2 = ConfigDB.execute(heuristicq + " WHERE (icid=? AND "+
+					"value LIKE ?)",
+					info[:prevq], '%'+e+'%')
 	heuristicFilter(results2, e)
-	count2 = countUniqueProducts(results2)
+	
+	if results2.length > 0
+		results2 = ConfigDB.execute(info[:query] + " INTERSECT "+countq+
+			" WHERE (icid=? AND value LIKE ?)", info[:prevq],
+						'%'+e+'%')	
+		count2 = results2.length
+	end
 	
 	if count1 - count2 > 0 and count2 > 0
 		# Delete previous question from toask list if its not 'option'
@@ -147,14 +160,9 @@ idents.each do |e|
 			info[:prevq]==k && v != "option"
 		end
 		# TODO: Come up with a way to prevent SQL Injections
-		if info[:querypred] == ""
-			info[:querypred] << " WHERE (icid = "+
-				info[:prevq].to_s+
-				" AND value LIKE '%" + e + "%')"
-		else
-			info[:querypred] << " OR (icid = " +info[:prevq].to_s+
-				" AND value LIKE '%" + e + "%')"
-		end
+		info[:query] << " INTERSECT "+countq+" WHERE (icid="+
+				info[:prevq].to_s+" AND value LIKE '%"+
+				e+"%')"
 		
 		# Set flag to remove previous question.
 		info[:prevqmatched] = true
@@ -165,50 +173,40 @@ idents.each do |e|
 	end
 end
 
+count2 = 0
 # Now we will attempt to match any other words with whatever we can
 idents.each do |e|
-	info[:toask].keys.each do |id|
-		next if id == info[:prevq]
-		# First get the number of items we currently identify.
-		results1 = ConfigDB.execute(countq +
-			info[:querypred])
-		count1 = countUniqueProducts(results1)
-		if info[:querypred] == ""
-			results2 = ConfigDB.execute(countq + info[:querypred]+
-				" WHERE (icid = ? AND value LIKE ?)", id,
-				'%'+e+'%')
-		else
-			results2 = ConfigDB.execute(countq + info[:querypred]+
-				" OR (icid = ? AND value LIKE ?)", id,
-				'%'+e+'%')
-		end
-		heuristicFilter(results2, e)
-		count2 = countUniqueProducts(results2)
-		
-		# If we made any progress, pair them up, eliminate queries.
+	# First get an initial count from last query
+	results1 = ConfigDB.execute(info[:query])
+	count1 = results1.length
+	
+	results2 = ConfigDB.execute(heuristicq + " WHERE (icid!=? AND "+
+			"value LIKE ?)",
+					info[:prevq], '%'+e+'%')
+	heuristicFilter(results2, e)
+	icids = getICIDsFromResults(results2)
+	
+	icids.each do |icid|
+		results2 = ConfigDB.execute(info[:query] + " INTERSECT "+countq+
+			" WHERE (icid=? AND value LIKE ?)", icid,
+						'%'+e+'%')	
+		count2 = results2.length
+	
 		if count1 - count2 > 0 and count2 > 0
-			# TODO: Make this more efficient?
-			info[:toask].delete_if do |k, v|
-				k==id && v != "option"
-			end
-			# TODO: Prevent sql injections.
-			if info[:querypred] == ""
-				info[:querypred] << " WHERE (icid = "+id.to_s+
-					" AND value LIKE '%" + e + "%')"
-			else
-				info[:querypred] << " OR (icid = "+id.to_s+
-					" AND value LIKE '%" + e + "%')"
-			end
-			# Remove all occurences value from new_idents.
+			info[:query] << " INTERSECT "+countq+" WHERE (icid="+
+					icid.to_s+" AND value LIKE '%"+
+					e+"%') "
+			
+			# Remove all occurences values from idents.
 			#idents.delete(e)
-			break
 		end
 	end
 end
 
+=begin
 # Eliminate all questions that no longer make sense.
-p "Query predicate: #{info[:querypred]}"
-eliminator = ConfigDB.execute(geticidsq + info[:querypred] + ")")
+p "Query: #{info[:query]}"
+eliminator = ConfigDB.execute(geticidsq + info[:query] +")")
 eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
 if info[:prevq] != 0 and info[:prevqmatched]
 	eliminator.delete(info[:prevq])
@@ -222,6 +220,7 @@ info[:toask].each do |k, v|
 		info[:toask].delete(k)
 	end
 end
+=end
 
 p "####1"
 p info[:toask].length
@@ -229,7 +228,7 @@ p count1
 p count2
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
-	info[:results] = ConfigDB.execute(getidsq + info[:querypred])
+	info[:results] = ConfigDB.execute(info[:query])
 	# Add list task
 	newtask = Task.new(2, Actions[2][:priority], 2)
 	user.addTask(newtask)
@@ -302,7 +301,7 @@ info = tasklist[0].info
 getpidsq = "SELECT DISTINCT pid FROM productidentifiers"
 getproductsq = "SELECT * FROM product WHERE id = ?"
 
-pids = ConfigDB.execute(getpidsq + info[:querypred])
+pids = ConfigDB.execute(info[:query])
 pids.each_index { |i| pids[i].delete_if {|k, v| k.kind_of?(Integer)} }
 pids.each_index { |i| pids[i] = pids[i].flatten }
 pids = pids.flatten
