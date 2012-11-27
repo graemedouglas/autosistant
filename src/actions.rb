@@ -5,22 +5,18 @@ require 'pony'
 ### Functions ##################################################################
 # Heuristic for killing results that are not useful.
 def heuristicFilter(results, str)
-p "results: #{results}"
 	# Get into manageable form
 	results.delete_if do |v|
 		b = true
 		strings = v['value'].split
-p "strings #{strings}"
 		strings.each do |str2|
 			if !((str.subsequence(str2).to_f/str2.length.to_f)<0.66)
 				b = false
 				break
 			end
 		end
-p "b: #{b}"
 		b
 	end
-p "results (after): #{results}"
 end
 # Get ICIDs from the results.
 def getICIDsFromResults(results)
