@@ -51,14 +51,6 @@ def processSkipHint(skiphint)
 		return skiphint.split('|').map{|item| item.to_i}
 	end
 end
-# Validate email address.  Taken from: http://www.buildingwebapps.com/articles/79182-validating-email-addresses-with-ruby
-def validate_email_domain(email)
-      domain = email.match(/\@(.+)/)[1]
-      Resolv::DNS.open do |dns|
-          @mx = dns.getresources(domain, Resolv::DNS::Resource::IN::MX)
-      end
-      @mx.size > 0 ? true : false
-end
 ################################################################################
 
 ### Actions ####################################################################
