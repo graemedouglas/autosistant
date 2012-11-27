@@ -27,6 +27,63 @@ end
 ################################################################################
 
 ### Functions ##################################################################
+# Levenshtein distance function, used for guessing size of strings.
+# 	Taken from: https://github.com/gburtini/Go/blob/master/go.rb
+def levenshtein(a, b, delc, addc, subc)
+	back = nil, back2 = nil
+	current = (1..b.size).to_a + [0]
+	a.size.times do |x|
+		# Shuffle previous three steps and create new one for this round
+		back2, back, current = back, current, [0] * b.size + [x + 1]
+		
+		b.size.times do |y|
+			# Compute the different ways we could get there.
+			del = back[y] + delc
+			add = current[y - 1] + addc
+			sub = back[y - 1] + ((a[x] != b[y]) ? addc : 0)
+			current[y] = [del, add, sub].min
+			
+			if (x > 0 &&
+			    y > 0 &&
+			    a[x] == b[y-1] &&
+			    a[x-1] == b[y] &&
+			    a[x] != b[y])
+				current[y] = [current[y], back2[y-2] + 1].min
+			end
+		end
+	end
+	
+	return current[b.size - 1]
+end
+
+# Make suggestions based on user input.
+def makeSuggestions(words)
+	# Suggestions list
+	suggestions = []
+	
+	ActionPhrases.each do |row|
+		words.each do |uword|
+			aword = row['phrase']
+			longest = [uword.length, aword.length].max
+			edist = levenshtein(aword, uword, 1, 1, 1)
+			score = (1 - (edist.to_f/longest.to_f))
+			if score >= 0.66
+				suggestions << aword
+			end
+		end
+	end
+	
+	return nil if suggestions.empty?
+	
+	# Prepare message to return.
+	toRet = "Nothing you said told me what to do.  Maybe you meant:"
+	suggestions.each do |s|
+		toRet << "\\n\\t"+s
+	end
+	toRet
+end
+
+# Process a message.
 def processRequest(params)
 	# Set a flag so that we execute the correct query later on.
 	fromDB = false
@@ -62,7 +119,7 @@ def processRequest(params)
 	# Split the words.
 	words = params[:message].downcase.split(/[\s,?!;:]+/)
 	
-	# Filter out some unneeded words
+	# Filter out some unneeded words.  May not need this soon.
 	words.delete("a")
 	words.delete("to")
 	words.delete("the")
@@ -89,6 +146,7 @@ def processRequest(params)
 	end
 	
 	# TODO: Make signal make a whole lot more sense
+	firstIteration = true
 	newmessage = nil
 	signal = 2
 	until signal != 2
@@ -103,6 +161,11 @@ def processRequest(params)
 				newmessage, signal = user.doTask(words)
 			end
 		else
+			# If necessary, suggest actions.
+			if firstIteration and newmessage == nil
+				newmessage = makeSuggestions(words)
+			end
+			
 			if newmessage == nil
 				newmessage = "I have no current tasks to "+
 						"complete, how can I help you?"
@@ -119,6 +182,9 @@ def processRequest(params)
 				" can you rephrase your question?"
 			signal = 0
 		end
+		
+		# No longer on first iteration
+		firstIteration = false
 	end
 	
 	# TODO: Store history here.
