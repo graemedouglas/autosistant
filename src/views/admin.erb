@@ -43,9 +43,11 @@ var identcats = <%=
 toRet = "[ "
 index = 1
 IdentCats.each do |row|
-	toRet << "{ "
-	toRet << "id: #{index}, name: \"#{row["name"]}\""
-	toRet << " }, "
+	if row['priority'] >= 1
+		toRet << "{ "
+		toRet << "id: #{index}, name: \"#{row["name"]}\""
+		toRet << " }, "
+	end
 	index+=1
 end
 # Trim useless characters off.
@@ -148,6 +150,7 @@ function searchProducts(searchString){
 
 // Get product configuration information.
 function getProductConfig(id){
+	var pid = id;
 	$.ajax({
 		type:	'POST',
 		url:	'/autosistant/admin/ajax',
@@ -174,6 +177,10 @@ function getProductConfig(id){
 				// Empty the form.
 				$prodform.empty()
 				
+				// Add hidden input.
+				$prodform.append('<input type="hidden" '+
+					'id="hiddenpid" value="'+pid+'">');
+				
 				// Refill the form.
 				for (i = 0; i < identcats.length; i++) {
 					var id = identcats[i].id;
@@ -189,7 +196,8 @@ function getProductConfig(id){
 							'id="addPOpt'+id+'">'+
 							'Add</button>'+
 							'</br>'+
-							'<ul class="dynlist" '+
+							'<ul class="dynlist'+
+							' prodConfigList" '+
 							'id="poptul'+id+'">'
 							+'</ul>';
 					$prodform.append(newoption);
@@ -209,6 +217,56 @@ function getProductConfig(id){
 				$prodform.append('<button type="button" '+
 						'id="commitProdConfig">'+
 						'Commit Changes</button>');
+			} else {
+				alert("Errors occurred. The return status was: "
+					+parsed.state);
+			}
+		},
+		error:function(){
+			// AJAX Request failed!
+			alert('AJAX Failure: please try again!');
+		}
+	});
+};
+
+// Update product configuration information.
+function updateProductConfig() {
+	// Prepare the send data.
+	sendData = [];
+	
+	$("ul.dynlist.prodConfigList").each(function(){
+		var $curul = $(this);
+		var $prodform = $curul.closest("form");
+		var $hidden =
+			$prodform.children("#hiddenpid").eq(0);
+		var pid = parseInt($hidden.val(), 10);
+		var icid = parseInt($curul.attr("id").match(/\d+/), 10);
+		
+		$curul.children("li").each(function(){
+			var $curli = $(this);
+			var value = $curli.html();
+			value = value.substring(0, value.indexOf('<'));
+			sendData.push({ icid: icid, pid: pid, value: value });
+		});
+	});
+	
+	$.ajax({
+		type:	'POST',
+		url:	'/autosistant/admin/ajax',
+		data:	{
+				changeSet:	"updateProductConfig",
+				json:		sendData
+			},
+		beforeSend:function(){
+			// TODO: Notify user about waiting for reply?
+		},
+		success:function(data){
+			// AJAX request made succesfully!
+			// Parse the JSON message.
+			var parsed = $.parseJSON(data);
+			
+			// Check if changes made stayed.
+			if (parsed.state == 1) {
 			} else {
 				alert("Errors occurred. The return status was: "
 					+parsed.state);
@@ -420,6 +478,11 @@ $(function() {
 		var $form = $(this).closest('form');
 		$form.empty();
 		$form.append(prodPrev);
+	});
+	
+	// Send AJAX message for product configuration.
+	$(document).on('click', '#commitProdConfig', function() {
+		updateProductConfig();
 	});
 });
 </script>
