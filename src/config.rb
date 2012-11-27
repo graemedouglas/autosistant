@@ -19,8 +19,9 @@ UserStoreDB.results_as_hash = true
 ################################################################################
 
 ### Database-stored constants ##################################################
-ActionPhrases = ConfigDB.execute("SELECT * FROM actionphrases ORDER BY aid;")
-IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories;")
+ActionPhrases = ConfigDB.execute("SELECT * FROM actionphrases ORDER BY aid ASC")
+IdentCats = ConfigDB.execute("SELECT * FROM identifiercategories "+
+				"ORDER BY priority ASC, id ASC")
 ################################################################################
 
 ### Mutexes ####################################################################

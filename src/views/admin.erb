@@ -552,6 +552,33 @@ toRet
 </div>
 <div id="tabs-identcats">
 <h3>Identifier Category Configuration</h3>
+<form id="identCatConfigForm" action="">
+<label for="categoryName">Category Name</label>
+<input type="text" id="categoryName">
+<label for="categoryPriority">Priority</label>
+<input type="text" id="categoryPriority">
+<button type="button" id="addIdentCategories">Add Category</button>
+<ul id="identList" class="dynlist iclist">
+<%=
+# Populate the list
+toRet = ""
+IdentCats.each do |cat|
+	toRet << '<li>'+cat["name"]+' ('+cat["priority"].to_s+
+			')<a href="#" class="liLinkDelete">x</a>'+
+			'</br><label>Question</label>'+
+			'<input type="text" class="tbICQuestion">'+
+			'<button type="button" class="addICQuestion">'+
+				'Add Question</button>'+
+			'<ul class="dynlist icquestionlist"></ul>'+
+			'<input type="hidden" class="hiddenicid">'+
+			'<input type="hidden" class="hiddenpriority">'+
+			"</li>\n"
+end
+toRet
+%>
+</ul>
+<button type="button" id="commitIdentCategories">Commit Changes</button>
+</form>
 </div>
 <div id="tabs-products">
 <h3>Product Search Configuration</h3>
