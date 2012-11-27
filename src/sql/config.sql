@@ -17,11 +17,18 @@ CREATE TABLE actionphrases
 	UNIQUE (phrase)
 );
 
+CREATE TABLE identifierquestions
+(
+	id INTEGER PRIMARY KEY,
+	question TEXT,
+	icid INTEGER,
+	FOREIGN KEY(icid) REFERENCES identifiercategories(id)
+);
+
 CREATE TABLE identifiercategories
 (
 	id INTEGER PRIMARY KEY,
 	name TEXT,
-	question TEXT,
 	priority INTEGER,
 	UNIQUE (name)
 );

@@ -9,18 +9,38 @@ INSERT INTO options (key, value) VALUES ('email_noreply',
 	'example@thisisntreal.com');
 
 -- Setup identifier categories.
-INSERT INTO identifiercategories (name, question, priority)
-	VALUES ('vehiclespecific', 'Is this product vechicle specific?', 0);
-INSERT INTO identifiercategories (name, question, priority)
-	VALUES ('option', 'Any general information you know about the product or the vehicle?', 1);
-INSERT INTO identifiercategories (name, question, priority)
-	VALUES ('called', 'What do you call what you are looking for?', 1);
-INSERT INTO identifiercategories (name, question, priority)
-	VALUES ('year', 'What production year was this vehicle made in?', 1);
-INSERT INTO identifiercategories (name, question, priority)
-	VALUES ('make', 'Which company makes this product or the vechicle this product is for?', 1);
-INSERT INTO identifiercategories (name, question, priority)
-	VALUES ('model', 'What is the model name of this vehicle?', 1);
+INSERT INTO identifiercategories (name, priority)
+	VALUES ('vehiclespecific', 0);
+INSERT INTO identifiercategories (name, priority)
+	VALUES ('option', 1);
+INSERT INTO identifiercategories (name, priority)
+	VALUES ('called', 1);
+INSERT INTO identifiercategories (name, priority)
+	VALUES ('year', 1);
+INSERT INTO identifiercategories (name, priority)
+	VALUES ('make', 1);
+INSERT INTO identifiercategories (name, priority)
+	VALUES ('model', 1);
+
+-- Setup identifier questions.
+INSERT INTO identifierquestions (question, icid)
+	VALUES ('Is this product vechicle specific?',
+		(SELECT id FROM identifiercategories WHERE name = 'vehiclespecific'));
+INSERT INTO identifierquestions (question, icid)
+	VALUES ('Any general information you know about the product or the vehicle?',
+		(SELECT id FROM identifiercategories WHERE name = 'option'));
+INSERT INTO identifierquestions (question, icid)
+	VALUES ('What do you call what you are looking for?',
+		(SELECT id FROM identifiercategories WHERE name = 'called'));
+INSERT INTO identifierquestions (question, icid)
+	VALUES ('What production year was this vehicle made in?',
+		(SELECT id FROM identifiercategories WHERE name = 'year'));
+INSERT INTO identifierquestions (question, icid)
+	VALUES ('Which company makes this product or the vechicle this product is for?',
+		(SELECT id FROM identifiercategories WHERE name = 'make'));
+INSERT INTO identifierquestions (question, icid)
+	VALUES ('What is the model name of this vehicle?',
+		(SELECT id FROM identifiercategories WHERE name = 'model'));
 
 -- Setup question path killing.
 INSERT INTO questionpath (key, value, answer)
