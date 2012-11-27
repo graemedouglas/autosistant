@@ -498,7 +498,7 @@ $(function() {
 		var priority = parseInt($tbPriority.val());
 		
 		var $catul = $form.children('#identCatList');
-		
+		var dontadd = false;
 		// Check to see if there are any duplicates
 		$catul.children("li.idcatli").each(function(){
 			// Extract the text needed.
@@ -510,18 +510,22 @@ $(function() {
 			if (text == name) {
 				alert('There cannot be two identifier '+
 					'categories with the same name!');
+				dontadd = true;
 				return false;
 			}
 			else if (!name || name=="") {
 				alert('Each category must have a name!');
+				dontadd = true;
 				return false;
 			}
 			else if (isNaN(priority)) {
 				alert('New category must have an integer '+
 					'priority!');
+				dontadd = true;
 				return false;
 			}
 		});
+		if (dontadd) { return true };
 		
 		// Add new item to the list.
 		var newli = '<li class="idcatli">'+name+' ('+priority+
@@ -535,6 +539,25 @@ $(function() {
 				priority+'">';
 		$catul.append(newli);
 		// TODO: Sort the list?
+		
+		$tbCatName.val("");
+		$tbPriority.val("");
+	});
+	
+	// Add question to a identifier category.
+	$(document).on('click', '.addICQuestion', function(){
+		var $li = $(this).closest("li");
+		var $textbox = $li.children("input:text.tbICQuestion").eq(0);
+		var text = $textbox.val();
+		var $ul = $li.children("ul.icquestionlist").eq(0);
+		
+		// Append to the list.
+		var newli = '<li>'+text+
+				'<a href="#" class="liLinkDelete">x</a></li>';
+		$ul.append(newli);
+		
+		// Clear the textbox.
+		$textbox.val("");
 	});
 });
 </script>
