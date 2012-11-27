@@ -241,7 +241,6 @@ end
 info[:prevqname] = (IdentCats.select { |x| x['id'] == nextq })[0]['name']
 info[:prevq] = nextq
 # Return the question
-#return (IdentCats.select { |row| row["id"] == nextq })[0]["question"], 1
 question = ConfigDB.execute("SELECT question FROM identifierquestions "+
 				"WHERE icid = ?", nextq).sample["question"]
 return question, 1
