@@ -74,7 +74,7 @@ remove both the question and the answer from their respective arrays.
 Once we either run out of choices or terminate, we attempt to match the
 remaining new identifiers on a first-come, first serve basis.
 =end
-Actions << Hash[:description, "Identify products.", :priority, 10,
+Actions << Hash[:description, "Identify products", :priority, 10,
 		:configurable, true, :code,
 lambda { |idents, user|
 
@@ -259,7 +259,7 @@ return (IdentCats.select { |row| row["id"] == nextq })[0]["question"], 1
 =begin
 Termination of highest priority level task.
 =end
-Actions << Hash[:description, "End immediate task.", :priority, -100,
+Actions << Hash[:description, "End immediate task", :priority, -100,
 		:configurable, true,
 		:code,
 lambda { |idents, user|
@@ -272,7 +272,7 @@ return nil, 2
 =begin
 Show results of current search.
 =end
-Actions << Hash[:description, "Show results.", :priority, -100,
+Actions << Hash[:description, "Show results", :priority, -100,
 		:configurable, true, :code,
 lambda { |idents, user|
 
@@ -330,7 +330,7 @@ return toask, 1
 Choose items from a selection.  Desired items must be chosen with the quantity
 before the item.  Items must take the form p<number>.
 =end
-Actions << Hash[:description, "Choose products from list.", :priority, -101,
+Actions << Hash[:description, "Choose products from list", :priority, -101,
 		:configurable, false, :code,
 lambda { |idents, user|
 
@@ -425,7 +425,7 @@ return newmessage, 2
 =begin
 Enter order information.
 =end
-Actions << Hash[:description, "Enter order information.", :priority, 100,
+Actions << Hash[:description, "Enter order information", :priority, 100,
 		:configurable, true, :code,
 lambda { |idents, user|
 # Get the task information.
@@ -538,7 +538,7 @@ end
 =begin
 Confirm order information
 =end
-Actions << Hash[:description, "Confirm order.", :priority, -1000,
+Actions << Hash[:description, "Confirm order", :priority, -1000,
 		:configurable, false, :code,
 lambda { |idents, user|
 # Look for yes/no response.
@@ -593,5 +593,36 @@ if user.tasks.first.info[:first] == true
 end
 return "I'm sorry, I was unable to determine your decision.\\n\\n"+
 		"Are you sure you want to place this order?", 1
+}]
+
+=begin
+Display help information
+=end
+Actions << Hash[:description, "Display Help Information", :priority, -10000,
+		:configurable, true, :code,
+lambda { |idents, user|
+
+helpMessage = ""
+
+# Talk about basic information
+helpMessage << "You can make me do the following actions by including one of "+
+		"these words in your message:"
+aid = 0
+Actions.each do |action|
+	if action[:configurable]
+		helpMessage << "\\n\\t#{action[:description]}"
+		ConfigDB.execute("SELECT * FROM actionphrases WHERE aid=?",
+				aid).each do |row|
+			helpMessage << "\\n\\t\\t"+row["phrase"]
+		end
+	end
+	aid+=1
+end
+
+# Remove this task
+user.tasks.shift
+
+return helpMessage, 1
+
 }]
 ################################################################################

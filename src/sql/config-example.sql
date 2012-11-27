@@ -60,6 +60,8 @@ INSERT INTO actionphrases(phrase, aid)
 	VALUES ('summarize', 4);
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('place', 5);
+INSERT INTO actionphrases(phrase, aid)
+	VALUES ('help', 7);
 
 -- Configure ways of identifying first product
 INSERT INTO productidentifiers(pid, icid, value)
