@@ -36,3 +36,4 @@ Thumbs.db
 *bak
 # Annoying vim files
 *.swp
+*.swo
