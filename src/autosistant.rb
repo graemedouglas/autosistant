@@ -314,8 +314,35 @@ post '/autosistant/admin/ajax' do
 			2.times{toRet.chop!}	# Remove last two characters.
 		end
 		toRet << " ] }"
-p toRet
 		toRet
+	elsif "updateProductConfig" == changeSet
+		pid = params[:json]["pid"].to_i
+		toInsert = params[:json]["sendData"]
+		
+		if toInsert == nil
+			return "{\n\t\"state\":\"1\"\n}"
+		end
+		
+		toInsert = toInsert.flatten.select{|x| x.kind_of?(Hash)}
+		pid = params[:json]["pid"].to_i
+		# Prepare the return message.
+		
+		# Setup a database transaction.
+		ConfigDB.transaction do |db|
+			db.execute("DELETE FROM productidentifiers WHERE pid=?",
+					pid)
+			
+			toInsert.each do |item|
+p pid
+p item["icid"].to_i
+p item["value"]
+				db.execute("INSERT INTO productidentifiers "+
+					"(pid, icid, value) VALUES (?, ?, ?)",
+					pid, item["icid"].to_i, item["value"])
+p "!!!!!!!!!!!!!!!!!"
+			end
+		end
+		"{\n\t\"state\":\"1\"\n}"
 	else
 		# Return JSON message with error state.
 		"{\n\t\"state\":\"-1\"\n}"

@@ -230,23 +230,22 @@ function getProductConfig(id){
 };
 
 // Update product configuration information.
-function updateProductConfig() {
+function updateProductConfig($clicked) {
 	// Prepare the send data.
 	sendData = [];
+	var $prodform = $clicked.closest("form");
+	var $hidden = $prodform.children("#hiddenpid").eq(0);
+	var pid = parseInt($hidden.val(), 10);
 	
 	$("ul.dynlist.prodConfigList").each(function(){
 		var $curul = $(this);
-		var $prodform = $curul.closest("form");
-		var $hidden =
-			$prodform.children("#hiddenpid").eq(0);
-		var pid = parseInt($hidden.val(), 10);
 		var icid = parseInt($curul.attr("id").match(/\d+/), 10);
 		
 		$curul.children("li").each(function(){
 			var $curli = $(this);
 			var value = $curli.html();
 			value = value.substring(0, value.indexOf('<'));
-			sendData.push({ icid: icid, pid: pid, value: value });
+			sendData.push({ icid: icid, value: value });
 		});
 	});
 	
@@ -255,7 +254,10 @@ function updateProductConfig() {
 		url:	'/autosistant/admin/ajax',
 		data:	{
 				changeSet:	"updateProductConfig",
-				json:		sendData
+				json:		{
+							pid: pid,
+							sendData: sendData
+						}
 			},
 		beforeSend:function(){
 			// TODO: Notify user about waiting for reply?
@@ -267,6 +269,7 @@ function updateProductConfig() {
 			
 			// Check if changes made stayed.
 			if (parsed.state == 1) {
+				alert("Changes made successfully!");
 			} else {
 				alert("Errors occurred. The return status was: "
 					+parsed.state);
@@ -482,7 +485,7 @@ $(function() {
 	
 	// Send AJAX message for product configuration.
 	$(document).on('click', '#commitProdConfig', function() {
-		updateProductConfig();
+		updateProductConfig($(this));
 	});
 });
 </script>
