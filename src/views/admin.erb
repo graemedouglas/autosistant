@@ -487,6 +487,55 @@ $(function() {
 	$(document).on('click', '#commitProdConfig', function() {
 		updateProductConfig($(this));
 	});
+	
+	// Add an identifier category.
+	$(document).on('click', '#addIdentCategory', function() {
+		// Get objects we need.
+		var $form = $(this).closest('form');
+		var $tbCatName = $form.children('#categoryName').eq(0);
+		var $tbPriority = $form.children('#categoryPriority').eq(0);
+		var name = $tbCatName.val();
+		var priority = parseInt($tbPriority.val());
+		
+		var $catul = $form.children('#identCatList');
+		
+		// Check to see if there are any duplicates
+		$catul.children("li.idcatli").each(function(){
+			// Extract the text needed.
+			var $curli = $(this);
+			var text = $curli.html();
+			text = text.substring(0, text.indexOf(" "));
+			
+			// Check that we are not adding a non-unique name
+			if (text == name) {
+				alert('There cannot be two identifier '+
+					'categories with the same name!');
+				return false;
+			}
+			else if (!name || name=="") {
+				alert('Each category must have a name!');
+				return false;
+			}
+			else if (isNaN(priority)) {
+				alert('New category must have an integer '+
+					'priority!');
+				return false;
+			}
+		});
+		
+		// Add new item to the list.
+		var newli = '<li class="idcatli">'+name+' ('+priority+
+			')<a href="#" class="liLinkDelete">x</a>'+
+			'</br>'+
+			'<input type="text" class="tbICQuestion">'+
+			'<button type="button" class="addICQuestion">'+
+				'Add Question</button>'+
+			'<ul class="dynlist icquestionlist"></ul>'+
+			'<input type="hidden" class="hiddenpriority" value="'+
+				priority+'">';
+		$catul.append(newli);
+		// TODO: Sort the list?
+	});
 });
 </script>
 <style>
@@ -557,21 +606,29 @@ toRet
 <input type="text" id="categoryName">
 <label for="categoryPriority">Priority</label>
 <input type="text" id="categoryPriority">
-<button type="button" id="addIdentCategories">Add Category</button>
-<ul id="identList" class="dynlist iclist">
+<button type="button" id="addIdentCategory">Add Category</button>
+<ul id="identCatList" class="dynlist iclist">
 <%=
 # Populate the list
 toRet = ""
 IdentCats.each do |cat|
-	toRet << '<li>'+cat["name"]+' ('+cat["priority"].to_s+
+	toRet << '<li class="idcatli">'+cat["name"]+' ('+cat["priority"].to_s+
 			')<a href="#" class="liLinkDelete">x</a>'+
-			'</br><label>Question</label>'+
+			'</br>'+
 			'<input type="text" class="tbICQuestion">'+
 			'<button type="button" class="addICQuestion">'+
 				'Add Question</button>'+
-			'<ul class="dynlist icquestionlist"></ul>'+
-			'<input type="hidden" class="hiddenicid">'+
-			'<input type="hidden" class="hiddenpriority">'+
+			'<ul class="dynlist icquestionlist">'
+	results = ConfigDB.execute("SELECT question FROM identifierquestions "+
+					"WHERE icid=?", cat["id"]);
+	results.each do |row|
+		toRet << '<li>'+row["question"]+
+				'<a href="#" class="liLinkDelete">x</a></li>'
+	end
+	
+	toRet << '</ul>'+
+			'<input type="hidden" class="hiddenpriority" value="'+
+				cat["priority"].to_s+'">'+
 			"</li>\n"
 end
 toRet
