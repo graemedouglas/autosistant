@@ -282,6 +282,77 @@ function updateProductConfig($clicked) {
 	});
 };
 
+// Update product configuration information.
+function updateICConfig($clicked) {
+	// Prepare the send data.
+	sendData = {};
+	var $form = $clicked.closest("form");
+	var $icul = $form.children("#identCatList").eq(0);
+	var icinfo = [];
+	var questioninfo = [];
+	
+	// Build up identifier category information.
+	$icul.children("li.idcatli").each(function(){
+		var $curli = $(this);
+		var text = $curli.html();
+		var priority = parseInt(text.substring(text.indexOf("(")+1,
+					text.indexOf(")")));
+		var name = text.substring(0, text.indexOf(" "));
+		
+		// Push new item onto the array
+		icinfo.push(	{
+					name:		name,
+					priority:	priority
+				});
+		
+		// Build up this part of questioninfo.
+		var $qul = $curli.children("ul.icquestionlist").eq(0);
+		$qul.children("li").each(function(){
+			$curli = $(this);
+			text = $curli.html();
+			var question = text.substring(0, text.indexOf("<"));
+			
+			questioninfo.push(	{
+							question: question,
+							name: name
+						});
+		});
+	});
+	$.ajax({
+		type:	'POST',
+		url:	'/autosistant/admin/ajax',
+		data:	{
+				changeSet:	"updateICConfig",
+				json:		{
+							icinfo: icinfo,
+							qinfo: questioninfo 
+						}
+			},
+		beforeSend:function(){
+			// TODO: Notify user about waiting for reply?
+		},
+		success:function(data){
+			// AJAX request made succesfully!
+			// Parse the JSON message.
+			var parsed = $.parseJSON(data);
+			
+			// Check if changes made stayed.
+			if (parsed.state == 1) {
+				alert("Changes made successfully!");
+			} else {
+				alert("Errors occurred. The return status was: "
+					+parsed.state);
+			}
+		},
+		error:function(){
+			// AJAX Request failed!
+			alert('AJAX Failure: please try again!');
+		}
+	});
+/*	
+*/
+};
+
 // Key codes for reference.
 var A_KEY = 65;
 var CTRL_KEY = 17;
@@ -558,6 +629,11 @@ $(function() {
 		
 		// Clear the textbox.
 		$textbox.val("");
+	});
+	
+	// Commit changes to Identifier Category settings.
+	$(document).on('click', '#commitIdentCategories', function(){
+		updateICConfig($(this));
 	});
 });
 </script>
