@@ -615,4 +615,50 @@ user.tasks.shift
 return helpMessage, 1
 
 }]
+
+=begin
+Report user UID so they can resume the session later.
+=end
+Actions << Hash[:description, "Report Session ID", :priority, -10000,
+		:configurable, true, :code,
+lambda { |idents, user|
+	# TODO: Add security measure?!?
+	
+	# Get rid of this task.
+	user.tasks.shift
+	
+	# Choose a message from a random set.
+	message = [
+				"Your session identification number is _.",
+				"_ is your session identification number.",
+				"Alright, your session ID is _."
+		  ].sample
+	
+	# Substitute in the users id.
+	message.gsub!(/_/, user.id.to_s)
+	
+	return message, 1
+}]
+
+=begin
+Resume a previous session.
+=end
+Actions << Hash[:description, "Resume previous session", :priority, -1000000,
+		:configurable, true, :code,
+lambda { |idents, user|
+	# Shift off this task.
+	user.tasks.shift
+	
+	# Search all the idents for the first UID that works.
+	idents.each do |ident|
+		newuser = UserStoreDB.execute("SELECT serialized FROM "+
+						"userstore WHERE uid = ?;",
+						ident)
+		if newuser.length == 1
+			newuser = YAML.load(newuser[0]['serialized'])
+			return "Sucessfully loaded session session.", 2, newuser
+		end
+	end
+	return "I'm sorry, I couldn't find a matching session.", 2
+}]
 ################################################################################

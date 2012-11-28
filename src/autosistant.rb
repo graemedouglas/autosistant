@@ -149,16 +149,18 @@ def processRequest(params)
 	firstIteration = true
 	newmessage = nil
 	signal = 2
+	moduser = nil
 	until signal != 2
 		# Perform the highest priority task.
 		if user.tasks != nil and user.nextTask != nil
 			if newmessage != nil
-				newmessage2, signal = user.doTask(words)
+				newmessage2, signal, moduser =
+							user.doTask(words)
 				if newmessage2 != nil
 					newmessage << "\\n\\n" + newmessage2
 				end
 			else
-				newmessage, signal = user.doTask(words)
+				newmessage, signal, moduser = user.doTask(words)
 			end
 		else
 			# If necessary, suggest actions.
@@ -176,6 +178,10 @@ def processRequest(params)
 			end
 			signal = 0
 		end
+		
+		# This hack brought to you by Ruby's wonderful scoping system!
+		# Passing object references by references would be handy!
+		if moduser != nil then user = moduser end
 		
 		if newmessage == nil and signal != 2
 			newmessage = "I don't understand what you are asking"+
