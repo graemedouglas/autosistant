@@ -333,15 +333,53 @@ post '/autosistant/admin/ajax' do
 					pid)
 			
 			toInsert.each do |item|
-p pid
-p item["icid"].to_i
-p item["value"]
 				db.execute("INSERT INTO productidentifiers "+
 					"(pid, icid, value) VALUES (?, ?, ?)",
 					pid, item["icid"].to_i, item["value"])
-p "!!!!!!!!!!!!!!!!!"
 			end
 		end
+		"{\n\t\"state\":\"1\"\n}"
+	elsif "updateICConfig" == changeSet
+		# Get necessary data.
+		icinfo = params[:json]["icinfo"]
+		questioninfo = params[:json]["qinfo"]
+		
+		# Get it into the right form.
+		icinfo = icinfo.flatten.select{|x| x.kind_of?(Hash)}
+		questioninfo = questioninfo.flatten.select{|x| x.kind_of?(Hash)}
+		
+		# Update the database.
+		ConfigDB.transaction do |db|
+			# Delete all previous information.
+			db.execute("DELETE FROM identifiercategories")
+			db.execute("DELETE FROM identifierquestions")
+			
+			# Insert into identifiercategories
+			icinfo.each do |item|
+				db.execute("INSERT INTO identifiercategories "+
+					"(name, priority) VALUES (?, ?)",
+						item["name"],
+						item["priority"].to_i)
+			end
+			
+			# Insert into identifierquestions
+			questioninfo.each do |item|
+				id = db.execute("SELECT id FROM "+
+						"identifiercategories WHERE "+
+						"name=?", item["name"])[0]["id"]
+				db.execute("INSERT INTO identifierquestions "+
+					"(question, icid) VALUES (?, ?)",
+						item["question"], id)
+			end
+		end
+
+		# Finally, update the Identifier categories array.
+		#	Note: This will generate a harmless warning.
+		newarr = ConfigDB.execute("SELECT * FROM identifiercategories "+
+					"ORDER BY priority ASC, id ASC")
+		IdentCats = newarr
+		
+		# Return the state information.
 		"{\n\t\"state\":\"1\"\n}"
 	else
 		# Return JSON message with error state.
