@@ -289,28 +289,34 @@ function updateICConfig($clicked) {
 			alert('AJAX Failure: please try again!');
 		}
 	});
-/*	
-*/
 };
 
 // Key codes for reference.
 var A_KEY = 65;
 var CTRL_KEY = 17;
 var BACKSPACE_KEY = 8;
+var L_ARROW = 37;
+var U_ARROW = 38;
+var R_ARROW = 39;
+var D_ARROW = 40;
 
 $(function() {
-/* TODO:
- * ** Maybe move all this JS to a seperate file, if possible?
-*/
 	/// Try and prevent non-letters from being entered in certain textboxes
 	var validateLettersOnly = function(selector) {
 		var $elem = $(selector);
-		var replace = $elem.val().replace(/[^a-zA-Z]/, "");
+		var replace = $elem.val().replace(/[^a-zA-Z]/g, "");
 		return $elem.val(replace);
 	}
 
 	$(".lettersonly").keydown(function(e) {
-		if ((e.which < 65 || e.which > 90) && e.which != BACKSPACE_KEY)
+		if ((e.which < 65 || e.which > 90) &&
+		    e.which != BACKSPACE_KEY &&
+		    e.which != L_ARROW &&
+		    e.which != U_ARROW &&
+		    e.which != R_ARROW &&
+		    e.which != D_ARROW
+		)
+	
 			e.preventDefault();
 		return true;
 	});
@@ -322,8 +328,18 @@ $(function() {
 			(e.which === CTRL_KEY)
 				||
 			(e.which === BACKSPACE_KEY)
+				||
+			(e.which === L_ARROW)
+				||
+			(e.which === U_ARROW)
+				||
+			(e.which === R_ARROW)
+				||
+			(e.which === L_ARROW)
 		)
+		{
 			return true;
+		}
 
 		validateLettersOnly(this);	
 		return true;
