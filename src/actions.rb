@@ -3,6 +3,35 @@ require 'resolv'
 require 'pony'
 ################################################################################
 ### Functions ##################################################################
+# Get a score of how similar two strings are based on LCS.
+def subsequenceScore(str1, str2)
+	# Get the maximum string length.
+	maxl = (str1.length > str2.length ? str1.length : str2.length).to_f
+	
+	# Return the value.
+	(str1.subsequence(str2).to_f/maxl)
+end
+# Determine how many needles are heuristically similar to something in haystack.
+def subsequenceCount(needles, haystack)
+	count = 0
+	needles = Array.new(needles)
+	haystack = Array.new(haystack)
+	haystack.delete_if do |str1|
+		todeleteH = false
+		needles.delete_if do |str2|
+			todeleteN = false
+			if subsequenceScore(str1, str2) > 0.66 and
+			   !seen.include?(str1) and !seen.include?(str2)
+				count+=1
+				todeleteH = true
+				todeleteN = true
+			end
+			toDeleteN
+		end
+		toDeleteH
+	end
+	count
+end
 # Heuristic for killing results that are not useful.
 def heuristicFilter(results, str)
 	# Get into manageable form
@@ -160,32 +189,36 @@ idents.each do |e|
 	end
 end
 
+# Now we will attempt to match any other words with whatever we can, in the
+# smartest way possible.
 count2 = 0
-# Now we will attempt to match any other words with whatever we can
-idents.each do |e|
-	# First get an initial count from last query
-	results1 = ConfigDB.execute(info[:query])
-	count1 = results1.length
-	
-	results2 = ConfigDB.execute(heuristicq + " WHERE (icid!=? AND "+
-			"value LIKE ?)",
-					info[:prevq], '%'+e+'%')
-	heuristicFilter(results2, e)
-	icids = getICIDsFromResults(results2)
-	
-	icids.each do |icid|
-		results2 = ConfigDB.execute(info[:query] + " INTERSECT "+countq+
-			" WHERE (icid=? AND value LIKE ?)", icid,
-						'%'+e+'%')	
-		count2 = results2.length
-	
+matchedOrder = Hash.new()
+ConfigDB.execute("SELECT * FROM productidentifiers WHERE pid IN ( "+ 
+			info[:query] + ")").each do |row|
+	values = row["values"].split
+	tempCount = subsequenceCount(values, idents)
+	if matchedOrder[tempCount] == nil
+		matchedOrder[tempCount] = []
+	end
+	matchedOrder[tempCount] << row
+end
+# Process in sorted order.
+keepGoing = true
+while keepGoing and !matchedOrder.empty?
+	currentKey = matchedOrder.keys.sort.last
+	matchOrder[currentKey].delete_if do |row|
+		# TODO: We don't necessarilly need to do another query.
+		count1 = ConfigDB.execute(info[:query]).length
+		newquery = info[:query] + " INTERSECT "+countq+" WHERE (icid=?"
+		row["values"].each do |val|
+			newquery << " AND value LIKE '%"+val+"%'"
+		end
+		newquery << ")"
+		
+		count2 = ConfigDB.execute(newquery).length
+		
 		if count1 - count2 > 0 and count2 > 0
-			info[:query] << " INTERSECT "+countq+" WHERE (icid="+
-					icid.to_s+" AND value LIKE '%"+
-					e+"%') "
-			
-			# Remove all occurences values from idents.
-			#idents.delete(e)
+			values = row.split
 		end
 	end
 end
