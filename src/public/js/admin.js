@@ -129,7 +129,9 @@ function getProductConfig(id){
 							+name+'">'+name+
 							'</label>'+
 							'<input type="input"'+
-							'id="popttb'+id+'">'+
+							'id="popttb'+id+'" '+
+							'class='+
+							'"numsletsspacesonly">'+
 							'</input><button '+
 							'type="button" '+
 							'class="addProdOpt" '+
@@ -295,10 +297,11 @@ function updateICConfig($clicked) {
 var A_KEY = 65;
 var CTRL_KEY = 17;
 var BACKSPACE_KEY = 8;
-var L_ARROW = 37;
-var U_ARROW = 38;
-var R_ARROW = 39;
-var D_ARROW = 40;
+var L_ARROW_KEY = 37;
+var U_ARROW_KEY = 38;
+var R_ARROW_KEY = 39;
+var D_ARROW_KEY = 40;
+var SPACE_KEY = 32;
 
 $(function() {
 	/// Try and prevent non-letters from being entered in certain textboxes
@@ -311,16 +314,17 @@ $(function() {
 	$(".lettersonly").keydown(function(e) {
 		if ((e.which < 65 || e.which > 90) &&
 		    e.which != BACKSPACE_KEY &&
-		    e.which != L_ARROW &&
-		    e.which != U_ARROW &&
-		    e.which != R_ARROW &&
-		    e.which != D_ARROW
+		    e.which != L_ARROW_KEY &&
+		    e.which != U_ARROW_KEY &&
+		    e.which != R_ARROW_KEY &&
+		    e.which != D_ARROW_KEY
 		)
-	
+		{
 			e.preventDefault();
+		}
 		return true;
 	});
-
+	
 	$(".lettersonly").keyup(function(e) {
 		if(
 			(e.ctrlKey && e.which === A_KEY)	
@@ -329,22 +333,22 @@ $(function() {
 				||
 			(e.which === BACKSPACE_KEY)
 				||
-			(e.which === L_ARROW)
+			(e.which === L_ARROW_KEY)
 				||
-			(e.which === U_ARROW)
+			(e.which === U_ARROW_KEY)
 				||
-			(e.which === R_ARROW)
+			(e.which === R_ARROW_KEY)
 				||
-			(e.which === L_ARROW)
+			(e.which === L_ARROW_KEY)
 		)
 		{
 			return true;
 		}
-
+		
 		validateLettersOnly(this);	
 		return true;
 	});
-
+	
 	$(".lettersonly").bind("paste", function() {
 		var selector = this;
         	setTimeout(function() {
@@ -352,7 +356,117 @@ $(function() {
 		}, 20);
 	});
 	///
-
+	
+	/// Prevent anything but numbers from being entered.
+	var validateNumbersOnly = function(selector) {
+		var $elem = $(selector);
+		var replace = $elem.val().replace(/[^0-9]/g, "");
+		return $elem.val(replace);
+	}
+	
+	$(".numbersonly").keydown(function(e) {
+		if ((e.which < 48 || e.which > 57) &&
+		    e.which != BACKSPACE_KEY &&
+		    e.which != L_ARROW_KEY &&
+		    e.which != U_ARROW_KEY &&
+		    e.which != R_ARROW_KEY &&
+		    e.which != D_ARROW_KEY
+		)
+		{
+			e.preventDefault();
+		}
+		return true;
+	});
+	
+	$(".numbersonly").keyup(function(e) {
+		if(
+			(e.ctrlKey && e.which === A_KEY)	
+				|| 
+			(e.which === CTRL_KEY)
+				||
+			(e.which === BACKSPACE_KEY)
+				||
+			(e.which === L_ARROW_KEY)
+				||
+			(e.which === U_ARROW_KEY)
+				||
+			(e.which === R_ARROW_KEY)
+				||
+			(e.which === L_ARROW_KEY)
+		)
+		{
+			return true;
+		}
+		
+		validateNumbersOnly(this);	
+		return true;
+	});
+	
+	$(".numbersonly").bind("paste", function() {
+		var selector = this;
+        	setTimeout(function() {
+			validateNumbersOnly(selector);	
+		}, 20);
+	});
+	///
+	
+	/// Prevent anything but numbers from being entered.
+	var validateLettersNumbersSpacesOnly = function(selector) {
+		var $elem = $(selector);
+		var replace = $elem.val().replace(/[^a-zA-Z0-9 ]/g, "");
+		return $elem.val(replace);
+	}
+	
+	$(document).on('keydown', '.numsletsspacesonly', function(e) {
+		if ((e.which < 49 || e.which > 57) &&
+		    (e.which < 65 || e.which > 90) &&
+		    e.which != BACKSPACE_KEY &&
+		    e.which != L_ARROW_KEY &&
+		    e.which != U_ARROW_KEY &&
+		    e.which != R_ARROW_KEY &&
+		    e.which != D_ARROW_KEY &&
+		    e.which != SPACE_KEY
+		)
+		{
+			e.preventDefault();
+		}
+		return true;
+	});
+	
+	$(document).on('keyup', '.numsletsspacesonly', function(e) {
+		if(
+			(e.ctrlKey && e.which === A_KEY)	
+				|| 
+			(e.which === CTRL_KEY)
+				||
+			(e.which === BACKSPACE_KEY)
+				||
+			(e.which === L_ARROW_KEY)
+				||
+			(e.which === U_ARROW_KEY)
+				||
+			(e.which === R_ARROW_KEY)
+				||
+			(e.which === L_ARROW_KEY)
+				||
+			(e.which === SPACE_KEY)
+		)
+		{
+			return true;
+		}
+		
+		validateLettersNumbersSpacesOnly(this);	
+		return true;
+	});
+	
+	$(document).on('paste', '.numsletsspacesonly', function() {
+		var selector = this;
+        	setTimeout(function() {
+			validateLettersNumbersSpacesOnly(selector);	
+		}, 20);
+	});
+	///
+	
 	// Create UI Tabs.
 	$( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
 	$( "#tabs li" ).removeClass( "ui-corner-top" )
