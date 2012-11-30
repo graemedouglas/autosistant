@@ -152,6 +152,14 @@ along the lines of
 
 and the system will automatically resume the session.
 </li>
+<li>
+### Hot Updating
+
+The system will automatically and safely update any configuration variables
+that have been changed by a system administrator, even if a user is
+in the middle of a conversation.  This means that the system can be
+reconfigured with zero downtime.
+</li>
 
 System Installation and Execution Instructions
 ----------------------------------------------
@@ -200,7 +208,81 @@ JQueryUI CDN.
 Source Files
 ------------
 
-GRAEME NEEDS TO WRITE THIS!
+All source code files are in the src/ directory.  The files are:
+
+*	### autosistant.rb
+	
+	This is the main Sinatra application script.  It contains all of the
+	websites routes (Sinatra is a routing DSL, after all!) as well as
+	some code needed for the various routes.
+*	### actions.rb
+	
+	This script contains the "task store".  All system tasks are defined
+	in this file, within an array.  Some additional methods needed by
+	various actions are also defined here.
+*	### classes.rb
+	
+	Here all object definitions and modifications are defined.  This
+	includes modifications to the Array and String classes as well as
+	definitions for the Users and Tasks.
+*	### config.rb
+	
+	This is a file that is required by other files to make some of the
+	basic system configuration easily accessible.
+*	### sql/config.sql
+	
+	This file defines the tables in the configuration database.
+*	### sql/products.sql
+	
+	This file defines the tables needed to store product information.
+*	### sql/userstore.sql
+	
+	This file defines the table which stores serialized user session
+	objects.
+*	### sql/config-example.sql
+	
+	In this file, some very basic test data is defined for the
+	configuration database.
+*	### sql/deep-config.sql
+	
+	This file contains more in-depth example data.  If it is used,
+	it should be used alongside the deep-products.sql.
+*	### sql/product-example.sql
+	
+	A shallow example of product data is defined here.
+*	### sql/deep-products.sql
+	
+	Once again, this file defines a more complete set of product data
+	used for my example configuration.
+*	### setupexample.rb
+	
+	This file will create all the databases necessary for the system,
+	and will setup the example as to be marked.  This includes the
+	complete data set defined in the deep configuration files.
+*	### public/js/admin.js
+	
+	This contains all client javascript code needed for completing all
+	of the administration features.  This includes validation code and AJAX
+	handling functions.  It depends on JQuery.
+*	### views/admin.erb
+	
+	This is the file containing the templating ruby and HTML code used for
+	the administration page.  This file depends on JQuery and JQueryUI.
+*	### views/chat.erb
+	
+	This is the HTML file for the chat client.
+*	### sqlite/config.db
+	
+	Once generated, this is the SQLite3 database file for the configuration
+	database.
+*	### sqlite/product.db
+	
+	Once generated, this is the SQLite3 database file for the product
+	database.
+*	### userstore.db
+	
+	Once generated this is the SQLite3 database file for the user session
+	database.
 
 Known Issues
 ------------
