@@ -42,9 +42,9 @@ configuration in a more user-friendly way are a possibility (post-project).
 A+ Features
 -----------
 
-<ol>
-<li>
-### Smooth Converstation
+--------------------------------------------------------------------------------
+
+1.	### Smooth Converstation
 
 The conversation should not feel overly forced and should allow the user
 to enter relatively natural sentences as the main form of interaction
@@ -73,24 +73,20 @@ Additionally, the system will not always ask identification questions in
 the same order (though the system can be configured to ask especially
 important questions in a given order everytime, as necessary).  Again,
 identification questions will be asked in a random order.
-</li>  
-<li>
-### System Configurability
+2.	### System Configurability
 
 The system, as mentioned before, is configurable to meet different retailer
 needs.  I originally planned to make the words that map to actions
 configurable, but then also added easy product-question answer configuration,
 as well as sytem options, and also basic identification question configuration. 
-</li>
-<li>
-### Deep Domain Knowledge
+3.	### Deep Domain Knowledge
 
 The system manages a list of over 70 products as part of the provided
 example.  All of these products (except one!) have been configured to be
 identifiable.  Adding more products is simply a matter of adding more items
 to the database; in other words, domain knowledge is completely scalable!
-</li> 
-</ol>
+
+--------------------------------------------------------------------------------
 
 Additional Features
 -------------------
@@ -157,7 +153,6 @@ along the lines of
 
 and the system will automatically resume the session.
 </li>
-</ol>
 
 Execution Instructions
 ----------------------
