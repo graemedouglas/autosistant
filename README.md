@@ -153,15 +153,49 @@ along the lines of
 and the system will automatically resume the session.
 </li>
 
-Execution Instructions
-----------------------
+System Installation and Execution Instructions
+----------------------------------------------
 
-GRAEME NEEDS TO WRITE THIS!
+The system has been written and tested using Ruby 1.9.3p194.  Installation
+of this software varies from system to system, but packages exist for pretty
+much any operating system.  Once this has been done, the following gems must
+be installed using the
 
-System Installation Instructions
---------------------------------
+	gem install <gem name>
 
-GRAEME NEEDS TO WRITE THIS!
+command:
+
+*	sinatra
+*	yaml
+*	sqlite3
+*	shotgun
+*	pony
+
+The system requires that a recent version of the SQLite3 database management
+system is installed.  This also varies from system to system, but most UNIX
+systems come installed with it.
+
+To install the system, simply execute from any bash shell:
+
+	git clone git://github.com/graemedouglas/autosistant.git
+
+Once the system has been installed, the system can be executed by executing,
+from the project directory in a bash shell:
+
+	cd src
+	ruby autosistant.rb
+
+This will run the software on port 4567.  To access the chat client,
+visit:
+	
+	http://localhost:4567/autosistant
+
+To visit the administration page, visit
+	
+	http://localhost:4567/autosistant/admin
+
+The administration page requires an internet question since it uses Google's
+JQueryUI CDN.
 
 Source Files
 ------------
