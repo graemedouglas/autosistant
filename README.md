@@ -194,7 +194,7 @@ To visit the administration page, visit
 	
 	http://localhost:4567/autosistant/admin
 
-The administration page requires an internet question since it uses Google's
+The administration page requires an internet connection since it uses Google's
 JQueryUI CDN.
 
 Source Files
