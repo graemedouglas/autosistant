@@ -3,40 +3,6 @@ require 'resolv'
 require 'pony'
 ################################################################################
 ### Functions ##################################################################
-# Get a score of how similar two strings are based on LCS.
-def subsequenceScore(str1, str2)
-	# Get the maximum string length.
-	maxl = (str1.length > str2.length ? str1.length : str2.length).to_f
-	
-	# Return the value.
-	(str1.downcase.subsequence(str2.downcase).to_f/maxl)
-end
-# Determine how many needles are heuristically similar to something in haystack.
-def subsequenceCount(needles, haystack)
-	# Create new arrays so as not to molest old arrays.  Sort and remove
-	# duplicates.
-	needles = Array.new(needles).sort.uniq
-	haystack = Array.new(haystack).sort.uniq
-	
-	# Needed variables.
-	count = 0
-	h = 0
-	n = 0
-	
-	# Loop through to count.
-	while h < haystack.length && n < needles.length
-		if subsequenceScore(needles[n], haystack[h]) > 0.66
-			count+=1
-			needles.delete_at(h)
-			needles.delete_at(n)
-		elsif needles[n].downcase < haystack[h].downcase
-			n+=1
-		elsif needles[n].downcase > haystack[h].downcase
-			h+=1
-		end
-	end 
-	count
-end
 # Heuristic for killing results that are not useful.
 def heuristicFilter(results, str)
 	# Get into manageable form
@@ -194,80 +160,35 @@ idents.each do |e|
 	end
 end
 
-# Now we will attempt to match any other words with whatever we can, in the
-# smartest way possible.
 count2 = 0
-matchedOrder = Hash.new()
-ConfigDB.execute("SELECT * FROM productidentifiers WHERE pid IN ( "+ 
-			info[:query] + ")").each do |row|
-	values = row["value"].split
-	tempCount = subsequenceCount(values, idents)
-	if matchedOrder[tempCount] == nil
-		matchedOrder[tempCount] = []
-	end
-	matchedOrder[tempCount] << row
-end
-# Process in sorted order.
-while !matchedOrder.empty?
-	# Get the current key
-	currentKey = matchedOrder.keys.sort.last
+# Now we will attempt to match any other words with whatever we can
+idents.each do |e|
+	# First get an initial count from last query
+	results1 = ConfigDB.execute(info[:query])
+	count1 = results1.length
 	
-	# Pop first element of the array.
-	row = matchedOrder[currentKey].shift
+	results2 = ConfigDB.execute(heuristicq + " WHERE (icid!=? AND "+
+			"value LIKE ?)",
+					info[:prevq], '%'+e+'%')
+	heuristicFilter(results2, e)
+	icids = getICIDsFromResults(results2)
 	
-	# TODO: We don't necessarilly need to do another query.
-	count1 = ConfigDB.execute(info[:query]).length
-	newquery = info[:query] + " INTERSECT "+countq+" WHERE (icid=?"
-	row["value"].split.each do |val|
-		newquery << " AND value LIKE '%"+val+"%'"
-	end
-	newquery << ")"
+	icids.each do |icid|
+		results2 = ConfigDB.execute(info[:query] + " INTERSECT "+countq+
+			" WHERE (icid=? AND value LIKE ?)", icid,
+						'%'+e+'%')	
+		count2 = results2.length
 	
-p newquery
-	results2 = ConfigDB.execute(newquery)
-	count2 = results2.length
-	
-	if count1 - count2 > 0 and count2 > 0
-		# Update the query.
-		info[:query] = newquery
-		
-		# TODO: Delete question?
-		
-		# Loop through all values
-		values = row.split
-		values.each do |val|
-			i = 0
-			while i <= currentKey
-				j = 0
-				if matchedOrder[i] == nil
-					i+=1
-					next
-				end
-				while j <= matchedOrder[i].length
-					nomatch = true
-					tempRow = matchedOrder[i][j]
-					tempVals = tempRow["value"].split
-					tempVals.each do |tval|
-						score = subsequenceScore(val,
-									tval)
-						if score > 0.66
-							nomatch = false
-							move =
-						matchedOrder[i].delete_at(j)
-							if i > 0
-							matchedOrder[i-1] <<
-									move
-							end
-							break
-						end
-					end
-					if nomatch then j+=1 end
-				end
-			end
+		if count1 - count2 > 0 and count2 > 0
+			info[:query] << " INTERSECT "+countq+" WHERE (icid="+
+					icid.to_s+" AND value LIKE '%"+
+					e+"%') "
+			
+			# Remove all occurences values from idents.
+			#idents.delete(e)
 		end
 	end
 end
-# Don't start at ^ too hard... you might go blind!
 
 =begin
 =end
