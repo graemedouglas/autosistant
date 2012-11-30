@@ -14,6 +14,10 @@ The admin configuration page. Targets HTML5.
 	href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
 <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"
 	type="text/javascript"></script>
+<!--
+<link rel="stylesheet" href="/css/formalize.css" />
+<script src="/js/jquery.formalize.js"></script>
+-->
 <script>
 // Variables defined at serve time.
 var actionlist = <%=
@@ -73,7 +77,7 @@ li { zoom:1 }
 <li><a href="#tabs-phrases">Phrases</a></li>
 <li><a href="#tabs-identcats">Identifier Categories</a></li>
 <li><a href="#tabs-products">Product Search</a></li>
-<li><a href="#tabs-ordering">Order Process</a></li>
+<li><a href="#tabs-sysoptions">System Options</a></li>
 </ul>
 
 <div id="tabs-phrases">
@@ -164,8 +168,24 @@ toRet
 </ul>
 </form>
 </div>
-<div id="tabs-ordering">
-<h3>Order Process Configuration</h3>
+<div id="tabs-sysoptions">
+<h3>System Option Configuration</h3>
+<%=
+# Populate the options from the key-value table.
+toRet = '<form id="sysoptions" action="">'+"\n"
+results = ConfigDB.execute("SELECT * FROM options")
+results.each do |row|
+	id = "sysopttb-"+row["key"]
+	toRet << '<label for="'+id+'">'+row["key"]+'</label></br>'+"\n"
+	toRet << '<textarea rows="2" cols="50" id="'+id+'">'+row["value"]+
+			'</textarea></br>'+"\n"
+end
+toRet << '<button type="button" id="commitSysOptions">Commit Changes</button>'
+toRet << '</form>'+"\n"
+
+# Evaluate the result.
+toRet
+%>
 </div>
 </div>
 </body>

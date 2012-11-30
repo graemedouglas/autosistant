@@ -29,7 +29,7 @@ UpdateQuantity = Mutex.new
 ################################################################################
 
 ### System options #############################################################
-# The resellers name.
+# NOTE: ALL CHANGES MADE HERE NEED TO BE UPDATED WHEN CHANGES COMMITTED BY ADMIN
 CompanyName = ConfigDB.execute("SELECT value FROM options WHERE key = ?",
 				'companyname')[0]["value"]
 NoreplyEmail = ConfigDB.execute("SELECT value FROM options WHERE key = ?",

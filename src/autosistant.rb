@@ -387,6 +387,34 @@ post '/autosistant/admin/ajax' do
 		
 		# Return the state information.
 		"{\n\t\"state\":\"1\"\n}"
+	elsif "updateSystemOptions" == changeSet
+		# Get the data to be inserted into the database.
+		data = params[:json]
+		data = data.flatten.select{|x| x.kind_of?(Hash)}
+		
+p data
+		# Now we will insert it into the database.
+		ConfigDB.transaction do |db|
+			# Delete previous options.
+			db.execute("DELETE FROM options")
+			
+			# Insert new values into database.
+			data.each do |d|
+				db.execute("INSERT INTO options (key, value) "+
+					"VALUES(?, ?)", d["key"], d["value"])
+			end
+		end
+		
+		# Update constants.  Ignore warnings!
+		CompanyName = ConfigDB.execute("SELECT value FROM options "+
+				"WHERE key = ?", 'companyname')[0]["value"]
+		NoreplyEmail = ConfigDB.execute("SELECT value FROM options "+
+				"WHERE key = ?", 'email_noreply')[0]["value"]
+		WelcomeMessage = ConfigDB.execute("SELECT value FROM options "+
+				"WHERE key = ?", 'welcomemessage')[0]["value"]
+		
+		# Return success.
+		"{\n\t\"state\":\"1\"\n}"
 	else
 		# Return JSON message with error state.
 		"{\n\t\"state\":\"-1\"\n}"

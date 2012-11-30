@@ -293,6 +293,57 @@ function updateICConfig($clicked) {
 	});
 };
 
+// Update system options.
+function updateSystemOptions($clicked) {
+	// Prepare the send data.
+	var sendData = [];
+	
+	// Objects we will need.
+	var $form = $clicked.closest("form");
+	
+	// Loop through each input element.
+	$form.children("textarea").each(function(){
+		var $cur = $(this);
+		var curid = $cur.attr("id");
+		// Replace the front tag exactly once.
+		var key = curid.replace(/sysopttb-/, "");
+		var value = $cur.val();
+		sendData.push(	{
+					key:	key,
+					value:	value
+				});
+	});
+	
+	$.ajax({
+		type:	'POST',
+		url:	'/autosistant/admin/ajax',
+		data:	{
+				changeSet:	"updateSystemOptions",
+				json:		sendData
+			},
+		beforeSend:function(){
+			// TODO: Notify user about waiting for reply?
+		},
+		success:function(data){
+			// AJAX request made succesfully!
+			// Parse the JSON message.
+			var parsed = $.parseJSON(data);
+			
+			// Check if changes made stayed.
+			if (parsed.state == 1) {
+				alert("Changes made successfully!");
+			} else {
+				alert("Errors occurred. The return status was: "
+					+parsed.state);
+			}
+		},
+		error:function(){
+			// AJAX Request failed!
+			alert('AJAX Failure: please try again!');
+		}
+	});
+};
+
 // Key codes for reference.
 var A_KEY = 65;
 var CTRL_KEY = 17;
@@ -704,5 +755,10 @@ $(function() {
 	// Commit changes to Identifier Category settings.
 	$(document).on('click', '#commitIdentCategories', function(){
 		updateICConfig($(this));
+	});
+	
+	// Commit changes to System Options.
+	$(document).on('click', '#commitSysOptions', function(){
+		updateSystemOptions($(this));
 	});
 });
