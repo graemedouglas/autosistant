@@ -66,6 +66,13 @@ and enter
 	"I'd like 1 p0, a p1, and 3 p3"
 
 when prompted in a fresh converstaion to see this mixed approach.
+
+Another aspect of this is to random system behaviour.  The system will
+choose one of a set number of random canned phrases when it has a choice.
+Additionally, the system will not always ask identification questions in
+the same order (though the system can be configured to ask especially
+important questions in a given order everytime, as necessary).  Again,
+identification questions will be asked in a random order.
 </li>  
 <li>
 ###System Configurability
@@ -83,8 +90,74 @@ example.  All of these products (except one!) have been configured to be
 identifiable.  Adding more products is simply a matter of adding more items
 to the database; in other words, domain knowledge is completely scalable!
 </li> 
+</ol>
+
+Additional Features
+-------------------
+<ol>
 <li>
+###Flexible Conciseness
+
+The system should be able to handle extremely verbose or extremely terse
+input.  This is acheived by using the word mapping model described previously.
 </li>
+<li>
+###Easy Administration
+
+I really wanted to make the system adminstriation to be as simple as possible
+given the time I had to develop it.  Making the configuration a webpage with
+a simple UI acheives this goal.
+</li>
+<li>
+###Suggestion Prompting
+
+As mentioned previously, the system will attempt to suggest possible
+action words if the user's message does not contain any action words and
+the system has no tasks to complete.  This is done using edit distance
+heuristics.
+</li>
+<li>
+###Heuristic Identifier Matching
+
+The system uses a longest-common-subsequence algorithm to match potential
+identifiers with system-stored answers to identifying questions.  It is
+highly effective for fuzzy matching user input.
+</li>
+<li>
+###Help Action
+
+The system has a basic help action: it will list out the possible ways of
+triggering different actions.  It is meant to give users a basic way
+getting started using the system.
+</li>
+<li>
+###Automatic Question Elimination
+
+The system will automatically elminate questions that no longer make sense
+to ask or will not be helpful in identifying products.  If all remaining
+products are for a 1992 Honda's, then it makes no sense to ask about the
+vehicle make or production year.
+
+Furthermore, if the set of products cannot be further reduced, it will
+atuomatically list the products so that the user can choose those that they
+want to buy.
+</li>
+<li>
+###Session Suspension and Resumation
+
+A user may suspend a session and return to the session at a later time.
+This feature is accessible by, at any time, typing
+
+	"I'd like to suspend my session for now."
+
+The system will print out a UUID.  At a later time, you may then say something
+along the lines of
+
+	"I'd like to resume my previous session with identification <UUID>"
+
+and the system will automatically resume the session.
+</li>
+</ol>
 
 Execution Instructions
 ----------------------
