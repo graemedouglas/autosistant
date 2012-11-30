@@ -44,7 +44,7 @@ A+ Features
 
 <ol>
 <li>
-###Smooth Converstation
+### Smooth Converstation
 
 The conversation should not feel overly forced and should allow the user
 to enter relatively natural sentences as the main form of interaction
@@ -75,7 +75,7 @@ important questions in a given order everytime, as necessary).  Again,
 identification questions will be asked in a random order.
 </li>  
 <li>
-###System Configurability
+### System Configurability
 
 The system, as mentioned before, is configurable to meet different retailer
 needs.  I originally planned to make the words that map to actions
@@ -83,7 +83,7 @@ configurable, but then also added easy product-question answer configuration,
 as well as sytem options, and also basic identification question configuration. 
 </li>
 <li>
-###Deep Domain Knowledge
+### Deep Domain Knowledge
 
 The system manages a list of over 70 products as part of the provided
 example.  All of these products (except one!) have been configured to be
@@ -96,20 +96,20 @@ Additional Features
 -------------------
 <ol>
 <li>
-###Flexible Conciseness
+### Flexible Conciseness
 
 The system should be able to handle extremely verbose or extremely terse
 input.  This is acheived by using the word mapping model described previously.
 </li>
 <li>
-###Easy Administration
+### Easy Administration
 
 I really wanted to make the system adminstriation to be as simple as possible
 given the time I had to develop it.  Making the configuration a webpage with
 a simple UI acheives this goal.
 </li>
 <li>
-###Suggestion Prompting
+### Suggestion Prompting
 
 As mentioned previously, the system will attempt to suggest possible
 action words if the user's message does not contain any action words and
@@ -117,21 +117,21 @@ the system has no tasks to complete.  This is done using edit distance
 heuristics.
 </li>
 <li>
-###Heuristic Identifier Matching
+### Heuristic Identifier Matching
 
 The system uses a longest-common-subsequence algorithm to match potential
 identifiers with system-stored answers to identifying questions.  It is
 highly effective for fuzzy matching user input.
 </li>
 <li>
-###Help Action
+### Help Action
 
 The system has a basic help action: it will list out the possible ways of
 triggering different actions.  It is meant to give users a basic way
 getting started using the system.
 </li>
 <li>
-###Automatic Question Elimination
+### Automatic Question Elimination
 
 The system will automatically elminate questions that no longer make sense
 to ask or will not be helpful in identifying products.  If all remaining
@@ -143,7 +143,7 @@ atuomatically list the products so that the user can choose those that they
 want to buy.
 </li>
 <li>
-###Session Suspension and Resumation
+### Session Suspension and Resumation
 
 A user may suspend a session and return to the session at a later time.
 This feature is accessible by, at any time, typing
