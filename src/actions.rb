@@ -147,6 +147,7 @@ idents.each do |e|
 			info[:prevq]==k && v != "option"
 		end
 		# TODO: Come up with a way to prevent SQL Injections
+		# TODO TODO TODO TODO: THIS DOESNT HANDLE STRINGS WITH "'"s!
 		info[:query] << " INTERSECT "+countq+" WHERE (icid="+
 				info[:prevq].to_s+" AND value LIKE '%"+
 				e+"%')"
@@ -198,7 +199,8 @@ end
 
 =begin
 =end
-# Eliminate all questions that no longer make sense.
+### Eliminate all questions that no longer make sense.
+# First we will eliminate all questions that have no answers left.
 eliminator = ConfigDB.execute(geticidsq + info[:query] + ")")
 eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
 p "eliminator #{eliminator}"
@@ -212,6 +214,19 @@ info[:toask].each do |k, v|
 		# These are the things we keep.
 	else
 		info[:toask].delete(k)
+	end
+end
+# Next we will eliminate all questions that have the same answer.
+info[:toask].delete_if do |k, v|
+	count = ConfigDB.execute("SELECT COUNT(DISTINCT value) as count FROM "+
+				"productidentifiers WHERE icid = ? AND "+
+				"pid IN (" + info[:query] + ")",
+				k)[0]["count"]
+	if count <= 1 and 
+	   IdentCats.select{|row| row["id"] == k}[0]["priority"].to_i >= 1
+		true
+	else
+		false
 	end
 end
 
@@ -240,7 +255,11 @@ end
 if minPriorityItem["priority"].to_i < 1
 	nextq = minPriorityItem["id"].to_i
 else
-	nextq = info[:toask].keys.sample
+	until nextq!=nil and (nextq != info[:prevq] or info[:toask].length < 2)
+		nextq = info[:toask].keys.sample
+	end
+p "!!!!!!!!!!!!!!!!!!!!!"
+p nextq
 end
 
 # Setup previous information for next request
