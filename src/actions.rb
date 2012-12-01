@@ -76,8 +76,11 @@ geticidsq = "SELECT DISTINCT icid FROM productidentifiers WHERE "+
 		"pid IN ( "
 
 # Some initial setup
-if info[:query] == nil
-	info[:query] = String.new(countq)
+if info[:pids] == nil
+	info[:pids] = ConfigDB.execute(countq)
+	info[:pids] = info[:pids].each_index do |i|
+		info[:pids][i] = info[:pids][i]["pid"]
+	end
 	# Get the questions to ask.
 	info[:toask] = Hash.new
 	IdentCats.each do |row|
@@ -115,7 +118,6 @@ if info[:prevqname] != nil and
 end
 
 # We will store the results of a query here.
-results1 = nil
 results2 = nil
 
 # Have variable to track number of products identified.
@@ -125,8 +127,7 @@ count2 = 0	# Count with new proposed query.
 # Eliminate question if we have an identifier for it, and construct new query
 idents.each do |e|
 	# First get an initial count from last query
-	results1 = ConfigDB.execute(info[:query])
-	count1 = countUniqueProducts(results1)#TODO: Unnecessary?
+	count1 = info[:pids].length
 	
 	results2 = ConfigDB.execute(heuristicq + " WHERE (icid=? AND "+
 					"value LIKE ?)",
@@ -134,9 +135,13 @@ idents.each do |e|
 	heuristicFilter(results2, e)
 	
 	if results2.length > 0
-		results2 = ConfigDB.execute(info[:query] + " INTERSECT "+countq+
+		results2 = ConfigDB.execute(countq+
 			" WHERE (icid=? AND value LIKE ?)", info[:prevq],
 						'%'+e+'%')	
+		results2 = results2.each_index do |i|
+			results2[i] = results2[i]["pid"]
+		end
+		results2 = info[:pids] & results2
 		count2 = results2.length
 	end
 	
@@ -146,11 +151,7 @@ idents.each do |e|
 		info[:toask].delete_if do |k, v|
 			info[:prevq]==k && v != "option"
 		end
-		# TODO: Come up with a way to prevent SQL Injections
-		# TODO TODO TODO TODO: THIS DOESNT HANDLE STRINGS WITH "'"s!
-		info[:query] << " INTERSECT "+countq+" WHERE (icid="+
-				info[:prevq].to_s+" AND value LIKE '%"+
-				e+"%')"
+		info[:pids] = results2
 		
 		# Set flag to remove previous question.
 		info[:prevqmatched] = true
@@ -165,32 +166,30 @@ count2 = 0
 # Now we will attempt to match any other words with whatever we can
 idents.each do |e|
 	# First get an initial count from last query
-	results1 = ConfigDB.execute(info[:query])
-	count1 = results1.length
+	count1 = info[:pids].length
 	
 	results2 = ConfigDB.execute(heuristicq + " WHERE (icid!=? AND "+
-			"value LIKE ?)",
+					"value LIKE ?)",
 					info[:prevq], '%'+e+'%')
 	heuristicFilter(results2, e)
 	icids = getICIDsFromResults(results2)
 	
 	#####
-	# Create the beginning of the new query string.
 	newquery = String.new(countq) + " WHERE (value LIKE ? AND "	
 	newquery << "icid IN (" + icids.join(", ") + ")"
 	newquery << ")"	
 	#####
 	
 	# Execute the new query.
-	results2 = ConfigDB.execute(info[:query] + " INTERSECT "+newquery,
-					'%'+e+'%')	
+	results2 = ConfigDB.execute(newquery, '%'+e+'%')	
+	results2 = results2.each_index do |i|
+		results2[i] = results2[i]["pid"]
+	end
+	results2 = info[:pids] & results2
 	count2 = results2.length
-
+	
 	if count1 - count2 > 0 and count2 > 0
-		# TODO TODO TODO TODO: THIS DOESNT HANDLE STRINGS WITH "'"s!
-		info[:query] << " INTERSECT "+countq+" WHERE (value LIKE '%"+
-				e+"%' AND icid IN ("+
-				icids.join(", ")+"))"
+		info[:pids] = results2
 		
 		# Remove all occurences values from idents.
 		#idents.delete(e)
@@ -201,10 +200,10 @@ end
 =end
 ### Eliminate all questions that no longer make sense.
 # First we will eliminate all questions that have no answers left.
-eliminator = ConfigDB.execute(geticidsq + info[:query] + ")")
+eliminator = ConfigDB.execute(geticidsq + info[:pids].join(", ")+")")
 eliminator.each_index{|i| eliminator[i] = eliminator[i]["icid"]}
 p "eliminator #{eliminator}"
-p "query #{info[:query]}"
+p "query #{info[:pids]}"
 if info[:prevq] != 0 and info[:prevqmatched]
 	eliminator.delete(info[:prevq])
 end
@@ -220,7 +219,7 @@ end
 info[:toask].delete_if do |k, v|
 	count = ConfigDB.execute("SELECT COUNT(DISTINCT value) as count FROM "+
 				"productidentifiers WHERE icid = ? AND "+
-				"pid IN (" + info[:query] + ")",
+				"pid IN (" + info[:pids].join(", ") + ")",
 				k)[0]["count"]
 	if count <= 1 and 
 	   IdentCats.select{|row| row["id"] == k}[0]["priority"].to_i >= 1
@@ -232,7 +231,7 @@ end
 
 # If the product has been identified, return it.
 if 1 == count1 or 1 == count2 or info[:toask].length == 0
-	info[:results] = ConfigDB.execute(info[:query])
+	info[:results] = info[:pids]
 	# Add list task
 	newtask = Task.new(2, Actions[2][:priority], 2)
 	user.addTask(newtask)
@@ -251,15 +250,12 @@ info[:toask].keys.each do |key|
 		minPriorityItem = category
 	end
 end
-# TODO: ONLY TAKE RANDOM IF CONFIG SAYS TO!
 if minPriorityItem["priority"].to_i < 1
 	nextq = minPriorityItem["id"].to_i
 else
 	until nextq!=nil and (nextq != info[:prevq] or info[:toask].length < 2)
 		nextq = info[:toask].keys.sample
 	end
-p "!!!!!!!!!!!!!!!!!!!!!"
-p nextq
 end
 
 # Setup previous information for next request
@@ -311,11 +307,7 @@ info = tasklist[0].info
 getpidsq = "SELECT DISTINCT pid FROM productidentifiers"
 getproductsq = "SELECT * FROM product WHERE id = ?"
 
-pids = ConfigDB.execute(info[:query])
-pids.each_index { |i| pids[i].delete_if {|k, v| k.kind_of?(Integer)} }
-pids.each_index { |i| pids[i] = pids[i].flatten }
-pids = pids.flatten
-pids.delete("pid")
+pids = info[:pids]
 
 toask = "These are the products I have identified:\\n"
 
