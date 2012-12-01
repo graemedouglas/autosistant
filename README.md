@@ -180,6 +180,12 @@ To install the system, simply execute from any bash shell:
 
 	git clone git://github.com/graemedouglas/autosistant.git
 
+The databases for an example system must be setup before running the code.
+This can be done by executing in a bash shell:
+	
+	cd src/sql
+	ruby setupexample.rb
+
 Once the system has been installed, the system can be executed by executing,
 from the project directory in a bash shell:
 
