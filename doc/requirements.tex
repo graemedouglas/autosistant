@@ -1,0 +1,76 @@
+\documentclass[11pt, titlepage]{article}
+\usepackage[pdftex]{graphicx}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{parskip}
+\makeatletter
+\renewcommand\@seccntformat[1]{}
+\makeatother
+
+\author{Graeme Douglas (76316090)}
+
+\begin{document}
+
+\section{Requirements}
+\subsection{Functional Requirements}
+\begin{enumerate}
+\item The system must identify products given a set of descriptive
+identifier words.
+\\ Priority: High - Estimate: 10 hours
+\item The system should allow administrators to configure which words identify
+a product.
+\\ Priority: High - Estimate: 4 hours
+\item The system shall ask users questions to help identify
+products sold, as necessary.
+\\ Priority: High - Estimate: 3 hours
+\item The system should store all configuration options in a database.
+\\ Priority: High - Estimate: 2 hours
+\item The system should provide the user with a way to choose one or more
+products from a list after the user has given all the information for the
+product that she can think of.
+\\ Priority: High - Estimate: 1 hour
+\item The system should allow identified items to be added to an order.
+\\ Priority: High - Estimate: 1 hour
+\item The system should be able to respond to erroneous or otherwise ambiguous
+user input appropriately.
+\\ Priority: High - Estimate: 1 hour
+\item The system should allow the user to place an order.
+\\ Priority: Medium - Estimate: 3 hours
+\item The system should allow administrators to configure which words are
+associated with a given action.
+\\ Priority: Medium - Estimate: 3 hours
+\item The system should have a configuration page that administrators can use
+to manage all of the system's configurables.
+\\ Priority: Medium - Estimate: 2 hours
+\item The system should allow administrators to configure what questions the
+system should ask in order to identify a product.
+\\ Priority: Medium - Estimate: 2 hours
+\item The system should alert the user to confirm when an order has been placed.
+\\ Priority: Low - Estimate: 1 hour
+\end{enumerate}
+\subsection{Non-functional Requirements}
+\begin{enumerate}
+\item The system should interact with the user in a natural, conversational
+manner.
+\\ Priority: High - Estimate: 3 hours
+\item The system shall allow the user to chat with the system via a web page.
+\\ Priority: High - Estimate: 2 hours
+\item The system must be able to carry conversations continuously without page
+refreshes.
+\\ Priority: High - Estimate: 1 hour
+\item The system must be able to respond a customer within 3 seconds of the
+message being received.
+\\ Priority: High - Estimate: Duration of project
+\item The system should email users to do order confirmation.
+\\ Priority: Low - Estimate: 1 hour
+\end{enumerate}
+\subsection{Environmental Constraints}
+\begin{enumerate}
+\item The system's chat client must be language independent.
+\\ Priority: High - Estimate: N/A (Will be by design)
+\end{enumerate}
+
+\end{document}
+
