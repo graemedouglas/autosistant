@@ -280,13 +280,25 @@ All source code files are in the src/ directory.  The files are:
 Known Issues
 ------------
 
-GRAEME NEEDS TO WRITE THIS!
+*	Order process verification isn't as comprehensive as it should be.
+	Specifically, when prompted for an expiry year, any 4 digit number
+	starting with a 2 is "acceptable".  When prompted for a month, since
+	matches are made from the starting of a string, "20" matches to "2"
+	and is thus an accpetable answer.  If I had a little more time, I'd
+	refactor the code to make it more precise, possibly storing serialized
+	verification code for each item instead of a regular expression.
 
 License Information
 -------------------
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
+You should have received a copy of the GNU General Public License along with
+this program. If not, see http://www.gnu.org/licenses/.

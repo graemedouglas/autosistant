@@ -139,8 +139,12 @@ class User
 		else
 			# Get insert index.
 			insertAt = @tasks.searchtask_lte(t.priority)+1
-			# Add the item.
-			@tasks.insert(insertAt, t)
+			temp = @tasks[insertAt-1]
+			if temp != nil and temp.priority == t.priority
+			else
+				# Add the item.
+				@tasks.insert(insertAt, t)
+			end
 		end
 	end
 	def nextTask()
