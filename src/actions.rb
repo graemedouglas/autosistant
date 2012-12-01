@@ -173,20 +173,26 @@ idents.each do |e|
 	heuristicFilter(results2, e)
 	icids = getICIDsFromResults(results2)
 	
-	icids.each do |icid|
-		results2 = ConfigDB.execute(info[:query] + " INTERSECT "+countq+
-			" WHERE (icid=? AND value LIKE ?)", icid,
-						'%'+e+'%')	
-		count2 = results2.length
+	#####
+	# Create the beginning of the new query string.
+	newquery = String.new(countq) + " WHERE (value LIKE ? AND "	
+	newquery << "icid IN (" + icids.join(", ") + ")"
+	newquery << ")"	
+	#####
 	
-		if count1 - count2 > 0 and count2 > 0
-			info[:query] << " INTERSECT "+countq+" WHERE (icid="+
-					icid.to_s+" AND value LIKE '%"+
-					e+"%') "
-			
-			# Remove all occurences values from idents.
-			#idents.delete(e)
-		end
+	# Execute the new query.
+	results2 = ConfigDB.execute(info[:query] + " INTERSECT "+newquery,
+					'%'+e+'%')	
+	count2 = results2.length
+
+	if count1 - count2 > 0 and count2 > 0
+		# TODO TODO TODO TODO: THIS DOESNT HANDLE STRINGS WITH "'"s!
+		info[:query] << " INTERSECT "+countq+" WHERE (value LIKE '%"+
+				e+"%' AND icid IN ("+
+				icids.join(", ")+"))"
+		
+		# Remove all occurences values from idents.
+		#idents.delete(e)
 	end
 end
 
