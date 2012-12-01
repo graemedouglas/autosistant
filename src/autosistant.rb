@@ -130,8 +130,6 @@ def processRequest(params)
 	
 	# Now we process the words.  We want to seperate action words from rest.
 	newtasks = []
-	# Iffy thing about this is that we only add each action once.  Not sure
-	# if that is bad or not.
 	ActionPhrases.each do |row|
 		if words.include?(row["phrase"])
 			newtasks << row["aid"]
