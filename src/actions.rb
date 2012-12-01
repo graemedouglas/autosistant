@@ -365,11 +365,6 @@ idents.each do |newident|
 					notsatisfied << [key, pid]
 				else
 					qty-=lastqty
-					# We actually want to do the update on
-					# order placement... still to do.
-					#ProductDB.execute("UPDATE product SET"+
-					#		" qty = ? WHERE id = ?",
-					#		qty, pid)
 					user.updateOrder(pid, lastqty)
 					lastqty = 1
 				end
@@ -525,6 +520,9 @@ if newmessage == nil
 			"\\n\\n"
 end
 
+# Delete all idents, so as not to screw up next execution.
+idents.delete_if{true}
+
 # If more questions, ask next question.  Otherwise, confirm and place order.
 if info[:toask].empty?
 	# Remove this item off the task list.
@@ -555,6 +553,36 @@ end
 
 idents.each do |ident|
 	if ident =~ /yes|y/i
+		notsatisfied = []
+		# Update quantities that are ordered, avoiding race conditions
+		UpdateQuantity.synchronize {
+			user.toBuy.each_pair do |k, v|
+				qtyr=ProductDB.execute("SELECT qty FROM "+
+							"product "+
+							"WHERE id = ?",
+							k)
+				if qtyr != nil && qtyr.length > 0
+					# Get the quantity left.
+					qty = qtyr[0]["qty"]
+					if qty < v
+						notsatisfied << k
+						
+						# Continue on to next iteration
+						next
+					end
+					# Update the databases quantities.
+					ProductDB.execute("UPDATE product SET"+
+							" qty = ? WHERE id = ?",
+							qty-v, k)
+				end
+			end
+		}
+		
+		# Remove unsatisfiable items from order.
+		notsatisfied.each do |x|
+			user.toBuy.delete(x)
+		end
+		
 		# Add product information.
 		user.tasks.first.info[:orderinfo][:products] = user.toBuy
 		
@@ -578,9 +606,21 @@ idents.each do |ident|
 		user.tasks.shift
 		
 		# Return message.
-		return "Your order was placed successfully. "+
-				"You will receive a confirmation "+
-				"email shortly.", 2
+		message = ""
+		
+		if notsatisfied != nil and !notsatisfied.empty?
+			message << "The following items could not be "+
+					"ordered for the quantities you chose:"
+			tempquery = "SELECT * FROM product WHERE id IN ("+
+					notsatisfied.join(", ")+")"
+			ProductDB.execute(tempquery).each do |row|
+				message << "\\n\\t"+row["name"]
+			end
+			message << "\\nAll other items ordered successfully."
+		else
+			message = "Your order was placed successfully."
+		end
+		return message, 2
 	elsif ident =~ /no|n/i
 		# Delete order information.
 		user.info[:orderinfo] = nil
