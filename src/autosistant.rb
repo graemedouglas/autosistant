@@ -126,6 +126,7 @@ def processRequest(params)
 	words.delete("it")
 	words.delete("i")
 	words.delete("i'd")
+	words.delete("for")
 	
 	# Now we process the words.  We want to seperate action words from rest.
 	newtasks = []
