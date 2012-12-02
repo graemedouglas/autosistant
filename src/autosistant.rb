@@ -21,11 +21,11 @@ end
 
 ### Some Basic Settings  #######################################################
 if PRODUCTION
-	set :server, "thin"
 	set :port, 80
+	set :server, "thin"
 else
-	set :server, "webrick"
 	set :port, 4567
+	set :server, "webrick"
 end
 ################################################################################
 
