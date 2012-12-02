@@ -167,7 +167,6 @@ be installed using the
 command:
 
 *	sinatra
-*	yaml
 *	sqlite3
 *	shotgun
 *	pony
