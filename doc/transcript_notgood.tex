@@ -1,0 +1,79 @@
+\documentclass[11pt, titlepage]{article}
+\usepackage[pdftex]{graphicx}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{listings}
+\lstset{breaklines=true}
+\makeatletter
+\renewcommand\@seccntformat[1]{}
+\makeatother
+
+\author{Graeme Douglas (76316090)}
+
+\begin{document}
+
+\section{Not-Good Conversation 1: General Example}
+
+\begin{lstlisting}
+Agent: Hello!  I will be your assistant for today.  How can I help you?
+
+Me: Hey there, I need a brake cable
+Agent: I have no current tasks to complete, how can I help you?
+Me: Hmm, I need to buy a brake cable?
+Agent: Is this product vechicle specific?
+Me: Yes...
+Agent: Which company makes this product or the vechicle this product is for?
+Me: toyota
+Agent: What is the model name of this vehicle?
+Me: List what you've got!
+Agent: These are the products I have identified:
+	p0:	 Brake Cable. In stock: 6. Price: $10.00
+	p1:	 1985 Toyota MR2 Front Brake Cable. In stock: 0. Price: $450.00
+Which item(s) would you like to add to the order?
+Me: Generic brake cable, eh?  I'll take it, 1 p0 please
+Agent: Your current order includes:
+	 Price: $10.00. Product: Brake Cable. Quantity: 1
+
+I have no current tasks to complete, how can I help you?
+Me: I'll place my order
+Agent: Would you like to pick up the item in store?
+Me: Nope
+Agent: Which country are you currently located in?
+Me: Canada
+Agent: Which province, territory, or state are you located in?
+Me: Land of the Flying Monkeys
+Agent: Which city, town, or village are you located in?
+Me: Bethlehem
+Agent: What is your postal code?
+Me: 12345
+Agent: What is your address?
+Me: !!!!!!!!!!
+Agent: Your answer didn't make sense.  Lets try this again.
+
+What is your address?
+Me: abc
+Agent: Can I collect your credit card number?
+Me: 01010101010101
+Agent: What is the expiry year for your credit card?
+Me: 2000
+Agent: In which month will your credit card expire?
+Me: 20
+Agent: What is the card security code for this credit card?
+Me: 987
+Agent: What email address should I contact you by?
+Me: fake@fake
+Agent: Your answer didn't make sense.  Lets try this again.
+
+What email address should I contact you by?
+Me: fake@fake.fake
+Agent: Are you sure you want to place this order?
+Me: Yup!
+Agent: Your order was placed successfully.
+
+I have no current tasks to complete, how can I help you?
+\end{lstlisting}
+
+\end{document}
