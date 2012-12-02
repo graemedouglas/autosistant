@@ -41,4 +41,5 @@ OrderNotification = "Hello Customer,  Thankyou for your business!"
 
 ### Developer options ##########################################################
 DEBUG_ON = true
+PRODUCTION = false
 ################################################################################
