@@ -157,19 +157,16 @@ reconfigured with zero downtime.
 System Installation and Execution Instructions
 ----------------------------------------------
 
-The system has been written and tested using Ruby 1.9.3p194.  Installation
+The system has been written and tested using Ruby 1.9.3 and rvm.  Installation
 of this software varies from system to system, but packages exist for pretty
-much any operating system.  Once this has been done, the following gems must
-be installed using the
+much any operating system.  Once this has been done, rubygems must be installed
+using rvm
 
-	gem install <gem name>
+	rvm rubygems current
 
-command:
+The system also depends on many gems, which can be installed by
 
-*	sinatra
-*	sqlite3
-*	shotgun
-*	pony
+	gem install rack thin sinatra shotgun pony sqlite3
 
 The system requires that a recent version of the SQLite3 database management
 system is installed.  This also varies from system to system, but most UNIX
@@ -282,6 +279,9 @@ All source code files are in the src/ directory.  The files are:
 	Once generated this is the SQLite3 database file for the user session
 	database.
 
+As a side note, all documentation exists in _doc/_ within the project
+directory.
+
 Known Issues
 ------------
 
@@ -292,6 +292,13 @@ Known Issues
 	and is thus an acceptable answer.  If I had a little more time, I'd
 	refactor the code to make it more precise, possibly storing serialized
 	verification code for each item instead of a regular expression.
+*	Since the system splits up the user's message primarily on spaces,
+	getting certain pieces of information, such as addresses, locations,
+	and zip codes do not work exactly as intended.  If I had more time,
+	I would fix this by returning a flag during any task where we wish
+	to not split up the message contentsand handle the input properly.
+*	I do not split on periods.  This is so I can handle emails properly.
+	Again, a flag for when to not split the input would fix this problem.
 
 License Information
 -------------------

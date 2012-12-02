@@ -68,7 +68,7 @@ INSERT INTO product (name, price, qty)
 INSERT INTO product (name, price, qty)
 	VALUES ('1995 Chevrolet 2500HD Brake Cable', 5000, 4);
 INSERT INTO product (name, price, qty)
-	VALUES ('1995 Chevrolet 2500HD Tailgate', 40000, 8);
+	VALUES ('1995 Chevrolet 2500HD Longbox Tailgate', 40000, 8);
 INSERT INTO product (name, price, qty)
 	VALUES ('1995 Chevrolet 2500HD Longbox Clutch Pedal', 7000, 1);
 INSERT INTO product (name, price, qty)

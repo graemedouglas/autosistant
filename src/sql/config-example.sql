@@ -61,17 +61,19 @@ INSERT INTO actionphrases(phrase, aid)
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('looking', 0);
 INSERT INTO actionphrases(phrase, aid)
-	VALUES ('look', 0);
-INSERT INTO actionphrases(phrase, aid)
 	VALUES ('interested', 0);
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('price', 0);
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('stock', 0);
 INSERT INTO actionphrases(phrase, aid)
+	VALUES ('purchase', 0);
+INSERT INTO actionphrases(phrase, aid)
+	VALUES ('acheter', 0);	-- French for buy.
+INSERT INTO actionphrases(phrase, aid)
 	VALUES ('forget', 1);
 INSERT INTO actionphrases(phrase, aid)
-	VALUES ('done', 1);
+	VALUES ('nevermind', 1);
 INSERT INTO actionphrases(phrase, aid)
 	VALUES ('show', 2);
 INSERT INTO actionphrases(phrase, aid)
@@ -106,6 +108,7 @@ INSERT INTO productidentifiers(pid, icid, value)
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (1, (SELECT id FROM identifiercategories WHERE name = 'option'),
 	       '20r');
+
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (2, (SELECT id FROM identifiercategories WHERE name = 'make'),
 	       'toyota');
@@ -123,6 +126,16 @@ INSERT INTO productidentifiers(pid, icid, value)
 	       'camshaft');
 INSERT INTO productidentifiers(pid, icid, value)
 	VALUES (2, (SELECT id FROM identifiercategories WHERE name = 'option'),
+	       '20r');
+
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (1, (SELECT id FROM identifiercategories WHERE name = 'year'),
+	       '1980');
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (1, (SELECT id FROM identifiercategories WHERE name = 'called'),
+	       'bloc-moteur');
+INSERT INTO productidentifiers(pid, icid, value)
+	VALUES (1, (SELECT id FROM identifiercategories WHERE name = 'option'),
 	       '20r');
 
 ---- Questions to be asked upon placing an order.

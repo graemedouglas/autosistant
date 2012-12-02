@@ -1,0 +1,348 @@
+\documentclass[11pt, titlepage]{article}
+\usepackage[pdftex]{graphicx}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{listings}
+\lstset{breaklines=true}
+\makeatletter
+\renewcommand\@seccntformat[1]{}
+\makeatother
+
+\author{Graeme Douglas (76316090)}
+
+\begin{document}
+
+\section{Working Conversation 1: General Example}
+
+\begin{lstlisting}
+Agent: Hello!  I will be your assistant for today.  How can I help you?
+
+Me: Hello, I am interested in what my french friend calls a bloc-moteur
+Agent: These are the products I have identified:
+	p0:	 20R Engine Block. In stock: 1. Price: $1000.00
+Which item(s) would you like to add to the order?
+Me: Wow, nice.  I will take 2 p0 please
+Agent: The following items could not be added to the order:
+	p0
+
+You currently have no items in your order.
+
+I have no current tasks to complete, how can I help you?
+Me: Oh, silly me!
+Agent: I have no current tasks to complete, how can I help you?
+Me: Well, I wanted to buy my son a team Honda jacket
+Agent: These are the products I have identified:
+	p0:	 Team Honda Jacket. In stock: 67. Price: $199.99
+Which item(s) would you like to add to the order?
+Me: Perfect!  He'll be so exicted.  I want a p0 please.
+Agent: Your current order includes:
+	 Price: $199.99. Product: Team Honda Jacket. Quantity: 1
+
+I have no current tasks to complete, how can I help you?
+Me: I'd also like to check the price of another jacket as well...
+Agent: Is this product vechicle specific?
+Me: No, it isn't
+Agent: What do you call what you are looking for?
+Me: A jacket
+Agent: Which company makes this product or the vechicle this product is for?
+Me: Oh no, I can't remember!  Can you please list the possible matches for me?
+Agent: These are the products I have identified:
+	p0:	 Team Toyota Jacket. In stock: 23. Price: $199.99
+	p1:	 Team Honda Jacket. In stock: 67. Price: $199.99
+	p2:	 Team Chevrolet Jacket. In stock: 9. Price: $200.00
+	p3:	 Team Ford Jacket. In stock: 0. Price: $200.00
+	p4:	 Team Lamborghini Jacket. In stock: 13. Price: $200.00
+	p5:	 Team Ferrari Jacket. In stock: 15. Price: $200.00
+	p6:	 Collector's Team Ferrari Jacket. In stock: 2. Price: $2000.00
+Which item(s) would you like to add to the order?
+Me: Of course, it was the Ferrari collector's jacket!  I'll take 1 p6, thanks!
+Agent: Your current order includes:
+	 Price: $199.99. Product: Team Honda Jacket. Quantity: 1
+	 Price: $2000.00. Product: Collector's Team Ferrari Jacket. Quantity: 1
+
+I have no current tasks to complete, how can I help you?
+Me: Well, I need to purchase something for my 2500HD with a longbox
+Agent: Is this product vechicle specific?
+Me: You bet!
+Agent: What do you call what you are looking for?
+Me: It's a tailgate
+Agent: These are the products I have identified:
+	p0:	 1995 Chevrolet 2500HD Longbox Tailgate. In stock: 8. Price: $400.00
+Which item(s) would you like to add to the order?
+Me: YES!  I will take a p0, thanks
+Agent: Your current order includes:
+	 Price: $199.99. Product: Team Honda Jacket. Quantity: 1
+	 Price: $2000.00. Product: Collector's Team Ferrari Jacket. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Longbox Tailgate. Quantity: 1
+
+I have no current tasks to complete, how can I help you?
+Me: I also need to buy a tailgate for another 2500HD, standard model
+Agent: Is this product vechicle specific?
+Me: Yup!
+Agent: What do you call what you are looking for?
+Me: Do you mind listing my choices?
+Agent: What do you call what you are looking for?
+Me: Do you mind giving me a list of my choices?
+Agent: These are the products I have identified:
+	p0:	 1995 Chevrolet 2500HD Tailgate. In stock: 2. Price: $400.00
+	p1:	 1995 Chevrolet 2500HD Longbox Tailgate. In stock: 8. Price: $400.00
+Which item(s) would you like to add to the order?
+Me: Cool, I'll take 2 p0
+Agent: Your current order includes:
+	 Price: $199.99. Product: Team Honda Jacket. Quantity: 1
+	 Price: $2000.00. Product: Collector's Team Ferrari Jacket. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Longbox Tailgate. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Tailgate. Quantity: 2
+
+I have no current tasks to complete, how can I help you?
+Me: Hmm, my daughter needs a brake cable, can you check the price of that?
+Agent: Is this product vechicle specific?
+Me: Oh, yes
+Agent: Which company makes this product or the vechicle this product is for?
+Me: Toyota
+Agent: What is the model name of this vehicle?
+Me: Its an MR2
+Agent: These are the products I have identified:
+	p0:	 1985 Toyota MR2 Front Brake Cable. In stock: 1. Price: $450.00
+Which item(s) would you like to add to the order?
+Me: I'll take the p0, thanks.
+Agent: Your current order includes:
+	 Price: $199.99. Product: Team Honda Jacket. Quantity: 1
+	 Price: $2000.00. Product: Collector's Team Ferrari Jacket. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Longbox Tailgate. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Tailgate. Quantity: 2
+	 Price: $450.00. Product: 1985 Toyota MR2 Front Brake Cable. Quantity: 1
+
+I have no current tasks to complete, how can I help you?
+Me: I am in the mood to spend!  Lets buy something else.
+Agent: Is this product vechicle specific?
+Me: I'll say yes
+Agent: Any general information you know about the product or the vehicle?
+Me: no, you better list everything!
+Agent: These are the products I have identified:
+	p0:	 20R Engine Block. In stock: 1. Price: $1000.00
+	p1:	 20R Engine Camshaft. In stock: 17. Price: $290.00
+	p2:	 Stock Wheels for 1980 Toyota Hilux. In stock: 14. Price: $1000.00
+	p3:	 Brake Cable. In stock: 6. Price: $10.00
+	p4:	 1980 Toyota Hilux Windshield Wipers: Winter Edition. In stock: 8. Price: $10.99
+	p5:	 1980 Toyota Hilux Windshield Wipers: Summer Edition. In stock: 2. Price: $10.99
+	p6:	 1980 Toyota Hilux Rear Heavy Duty Drum Brakes. In stock: 10. Price: $109.09
+	p7:	 1980 Toyota Hilux Front Disc Brakes. In stock: 4. Price: $76.67
+	p8:	 1980 Toyota Hilux Rear Drum Brakes. In stock: 7. Price: $80.01
+	p9:	 1980 Toyota Hilux Heavy Duty Winch. In stock: 0. Price: $600.99
+	p10:	 1985 Toyota MR2 Front Fender Set. In stock: 1. Price: $450.00
+	p11:	 1985 Toyota MR2 Front Brake Cable. In stock: 1. Price: $450.00
+	p12:	 Team Toyota Jacket. In stock: 23. Price: $199.99
+	p13:	 Team Honda Jacket. In stock: 67. Price: $199.99
+	p14:	 1992 Honda Accord Stock Wheels. In stock: 3. Price: $800.00
+	p15:	 1992 Honda Accord Brake Cable. In stock: 70. Price: $23.00
+	p16:	 1992 Honda Accord Gas Pedal. In stock: 100. Price: $30.01
+	p17:	 1992 Honda Accord Brake Pedal. In stock: 99. Price: $30.01
+	p18:	 1992 Honda Accord Front Fenders. In stock: 0. Price: $346.00
+	p19:	 1992 Honda Accord Driver's Side Floor Mat. In stock: 10. Price: $19.97
+	p20:	 1992 Hona Accord Exhaust Pipe. In stock: 5. Price: $200.00
+	p21:	 1992 Honda Accord Disc Brake Pads. In stock: 6. Price: $120.03
+	p22:	 1992 Honda Accord Door Lock set. In stock: 9. Price: $320.00
+	p23:	 1992 Honda Accord Winter Windshield Wipers. In stock: 1. Price: $18.00
+	p24:	 1992 Honda Accord Summer Windshield Wipers. In stock: 1. Price: $18.00
+	p25:	 Team Chevrolet Jacket. In stock: 9. Price: $200.00
+	p26:	 Chevrolet 350 Air Filter. In stock: 100. Price: $21.00
+	p27:	 1995 Chevrolet 2500HD Tailgate. In stock: 2. Price: $400.00
+	p28:	 1995 Chevrolet 2500HD Taillight Set. In stock: 2. Price: $120.70
+	p29:	 1995 Chevrolet 2500HD Fuel Injection System. In stock: 2. Price: $1000.50
+	p30:	 1995 Chevrolet 2500HD Door Handle. In stock: 20. Price: $49.98
+	p31:	 1995 Chevrolet 2500HD Clutch Pedal. In stock: 1. Price: $70.00
+	p32:	 1995 Chevrolet 2500HD Brake Cable. In stock: 4. Price: $50.00
+	p33:	 1995 Chevrolet 2500HD Longbox Tailgate. In stock: 8. Price: $400.00
+	p34:	 1995 Chevrolet 2500HD Longbox Clutch Pedal. In stock: 1. Price: $70.00
+	p35:	 1995 Chevrolet 2500HD Longbox Brake Cable. In stock: 4. Price: $50.00
+	p36:	 Team Ford Jacket. In stock: 0. Price: $200.00
+	p37:	 2012 Ford Mustang Spark Plugs. In stock: 400. Price: $34.64
+	p38:	 2012 Ford Mustang Brake Cable. In stock: 51. Price: $19.72
+	p39:	 2012 Ford Mustang Ignition Cables. In stock: 34. Price: $100.40
+	p40:	 2012 Ford Mustang Distributor. In stock: 23. Price: $209.09
+	p41:	 2013 Ford Mustang Headers. In stock: 6. Price: $470.10
+	p42:	 2013 Ford Mustang Spark Plugs. In stock: 212. Price: $34.64
+	p43:	 2013 Ford Mustang Brake Cable. In stock: 64. Price: $19.72
+	p44:	 2013 Ford Mustang Ignition Cables. In stock: 10. Price: $100.40
+	p45:	 2013 Ford Mustang Distributor. In stock: 32. Price: $209.09
+	p46:	 2013 Ford Mustang Headers. In stock: 11. Price: $470.10
+	p47:	 Team Lamborghini Jacket. In stock: 13. Price: $200.00
+	p48:	 2012 Aventador Brake Cable. In stock: 1. Price: $3000.00
+	p49:	 2012 Aventador Gas Cap. In stock: 1. Price: $1000.00
+	p50:	 2012 Aventador Clutch. In stock: 1. Price: $20000.00
+	p51:	 2012 Aventador Radiator. In stock: 1. Price: $21000.00
+	p52:	 2012 Aventador Steering Wheel. In stock: 1. Price: $4000.00
+	p53:	 2012 Aventador Door. In stock: 1. Price: $1000.00
+	p54:	 2012 Aventador Limited Edition Driving Gloves. In stock: 10. Price: $100.00
+	p55:	 2009 Murcielago Transmission Shifter. In stock: 1. Price: $500.00
+	p56:	 2009 Murcielago Track Tested Tires. In stock: 2. Price: $10000.00
+	p57:	 2009 Murcielago Professional Helmet. In stock: 4. Price: $950.00
+	p58:	 Team Ferrari Jacket. In stock: 15. Price: $200.00
+	p59:	 Collector's Team Ferrari Jacket. In stock: 2. Price: $2000.00
+	p60:	 2003 Enzo Driving Lessons. In stock: 10000000. Price: $9000.00
+	p61:	 2003 Enzo Sunglasses. In stock: 100. Price: $50.00
+	p62:	 2003 Enzo Formulated Oil - 1 Quart. In stock: 20. Price: $5000.00
+	p63:	 2003 Enzo Brake Pad Set. In stock: 1. Price: $30000.00
+	p64:	 2012 458 Italia Seat Covers. In stock: 1. Price: $300.00
+	p65:	 2012 458 Italia Clutch. In stock: 1. Price: $24000.00
+	p66:	 2012 458 Italia RaceDay Radiator Fluid. In stock: 3. Price: $2300.00
+	p67:	 Extroil 10W30 - 1 Quart. In stock: 130. Price: $11.99
+	p68:	 RoadRunners 10W30 - 1 Quart. In stock: 40. Price: $12.03
+	p69:	 MotoTown Windshield Fluid - 3 Litres. In stock: 87. Price: $20.51
+Which item(s) would you like to add to the order?
+Me: I HAVE to get Enzo driving lessons!!!  I'll probably need lots.  I'll take 20 p60
+Agent: Your current order includes:
+	 Price: $199.99. Product: Team Honda Jacket. Quantity: 1
+	 Price: $2000.00. Product: Collector's Team Ferrari Jacket. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Longbox Tailgate. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Tailgate. Quantity: 2
+	 Price: $450.00. Product: 1985 Toyota MR2 Front Brake Cable. Quantity: 1
+	 Price: $9000.00. Product: 2003 Enzo Driving Lessons. Quantity: 20
+
+I have no current tasks to complete, how can I help you?
+Me: Do you think my wife would let me buy one more thing?
+Agent: Is this product vechicle specific?
+Me: Nevermind, she said no.  Forget it.
+Agent: I have no current tasks to complete, how can I help you?
+Me: Can you please summarize my order?
+Agent: Your current order includes:
+	 Price: $199.99. Product: Team Honda Jacket. Quantity: 1
+	 Price: $2000.00. Product: Collector's Team Ferrari Jacket. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Longbox Tailgate. Quantity: 1
+	 Price: $400.00. Product: 1995 Chevrolet 2500HD Tailgate. Quantity: 2
+	 Price: $450.00. Product: 1985 Toyota MR2 Front Brake Cable. Quantity: 1
+	 Price: $9000.00. Product: 2003 Enzo Driving Lessons. Quantity: 20
+
+I have no current tasks to complete, how can I help you?
+Me: I am not sure how to order all this stuff.  Can you help me?
+Agent: You can make me do the following actions by including one of these words in your message:
+	Identify products
+		buy
+		looking
+		interested
+		price
+		stock
+		purchase
+		acheter
+	End immediate task
+		forget
+		nevermind
+	Show results
+		show
+		list
+	Display order info
+		summarize
+	Enter order information
+		place
+	Display Help Information
+		help
+	Report Session ID
+		suspend
+	Resume previous session
+		resume
+Me: Awesome.  I'll place my order then.
+Agent: Will you pick up the item in store?
+Me: No, I'll need it to be shipped.
+Agent: Which country are you currently located in?
+Me: Canada
+Agent: Which province, territory, or state are you located in?
+Me: BC
+Agent: Which city, town, or village are you located in?
+Me: Kelowna
+Agent: What is your postal code?
+Me: N1N1N1
+Agent: What is your address?
+Me: 123 Sesame Street
+Agent: What is your credit card number?
+Me: 0
+Agent: Your answer didn't make sense.  Lets try this again.
+
+What is your credit card number?
+Me: 0000000000000000
+Agent: In what year will your credit card expire?
+Me: 2013
+Agent: In which month will your credit card expire?
+Me: april
+Agent: What is the card security code for this credit card?
+Me: 123
+Agent: What email address should I contact you by?
+Me: thisisfake
+Agent: Your answer didn't make sense.  Lets try this again.
+
+What email address should I contact you by?
+Me: thisisfake@thisisfake.com
+Agent: Are you sure you want to place this order?
+Me: Yes
+Agent: Your order was placed successfully.
+
+I have no current tasks to complete, how can I help you?
+\end{lstlisting}
+
+\section{Working Conversation 2: Session Suspension and Resumption}
+\begin{lstlisting}
+Agent: Hello!  I will be your assistant for today.  How can I help you?
+
+Me: Hi there, I'd like to buy something for my Aventador
+Agent: Is this product vechicle specific?
+Me: Yes
+Agent: What do you call what you are looking for?
+Me: Uh oh, my friend just arrived, can I suspend this session?
+Agent: Your session identification number is e544f98a-083a-471d-ac14-c09b7bc2d08f.
+
+<< Refresh page >>
+
+Agent: Hello!  I will be your assistant for today.  How can I help you?
+
+Me: Hi, I'd like to resume my session.  My ID is e544f98a-083a-471d-ac14-c09b7bc2d08f
+Agent: Sucessfully loaded session session.
+
+What do you call what you are looking for?
+Me: I'm not sure, can you list the items available?
+Agent: These are the products I have identified:
+	p0:	 2012 Aventador Brake Cable. In stock: 1. Price: $3000.00
+	p1:	 2012 Aventador Gas Cap. In stock: 1. Price: $1000.00
+	p2:	 2012 Aventador Clutch. In stock: 1. Price: $20000.00
+	p3:	 2012 Aventador Radiator. In stock: 1. Price: $21000.00
+	p4:	 2012 Aventador Steering Wheel. In stock: 1. Price: $4000.00
+	p5:	 2012 Aventador Door. In stock: 1. Price: $1000.00
+	p6:	 2012 Aventador Limited Edition Driving Gloves. In stock: 10. Price: $100.00
+Which item(s) would you like to add to the order?
+Me: yikes, I can't afford this stuff.  But I will take 5 p6, thanks
+Agent: Your current order includes:
+	 Price: $100.00. Product: 2012 Aventador Limited Edition Driving Gloves. Quantity: 5
+
+I have no current tasks to complete, how can I help you?
+Me: I'd like to place my order
+Agent: Would you like to pick up the item in store?
+Me: Yes I would
+Agent: What is your postal code?
+Me: N1N1N1
+Agent: What is your address?
+Me: 123 Sesame Street
+Agent: What is your credit card number?
+Me: 1234567890123
+Agent: In what year will your credit card expire?
+Me: 2013
+Agent: In which month will your credit card expire?
+Me: jan
+Agent: What is the card security code for this credit card?
+Me: 444
+Agent: What email address should I contact you by?
+Me: yup@yup.com
+Agent: Are you sure you want to place this order?
+Me: no, actually I am not
+Agent: Your order information has been deleted.
+
+I have no current tasks to complete, how can I help you?
+Me: Can you summarize my order?
+Agent: Your current order includes:
+	 Price: $100.00. Product: 2012 Aventador Limited Edition Driving Gloves. Quantity: 5
+
+I have no current tasks to complete, how can I help you?
+\end{lstlisting}
+\end{document}
+
