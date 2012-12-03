@@ -338,6 +338,11 @@ library is used by the following source files:
 *	_src/public/js/admin.js_
 *	_src/views/chat.erb_
 
+Various gems are used throughout the project.  As noted above, they are
+easily installed.  The _actions.rb_ file uses the Pony gem (well, was going to,
+and might in the future), and the rest of the gems are used in
+_autosistant.rb_.
+
 License Information
 -------------------
 
