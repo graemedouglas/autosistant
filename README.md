@@ -157,6 +157,18 @@ reconfigured with zero downtime.
 System Installation and Execution Instructions
 ----------------------------------------------
 
+A completely setup example can found at
+
+	http://192.155.80.20:4567/autosistant
+
+and
+
+	http://192.155.80.20:4567/autosistant/admin
+
+for the user chat client and administration pages, respectively.  The system
+is best viewed in Chrome or Firefox.  It has not been tested with Internet
+Explorer.
+
 The system has been written and tested using Ruby 1.9.3 and rvm.  Installation
 of this software varies from system to system, but packages exist for pretty
 much any operating system.  Once this has been done, rubygems must be installed
@@ -181,6 +193,11 @@ This can be done by executing in a bash shell:
 	
 	cd src/sql
 	ruby setupexample.rb
+
+Finally, the system's administrative login details must be set.  Edit
+the _src/autosistant.rb_ script and set the _:admin _ uname_ and
+_:admin _ pword_ attributes to the desired values for administration login.
+Other configuration options can be found in _src/config.rb_.
 
 Once the system has been installed, the system can be executed by executing,
 from the project directory in a bash shell:
@@ -296,9 +313,30 @@ Known Issues
 	getting certain pieces of information, such as addresses, locations,
 	and zip codes do not work exactly as intended.  If I had more time,
 	I would fix this by returning a flag during any task where we wish
-	to not split up the message contentsand handle the input properly.
+	to not split up the message contents and handle the input properly.
 *	I do not split on periods.  This is so I can handle emails properly.
 	Again, a flag for when to not split the input would fix this problem.
+	If a user indicates some task-mapped-word followed immediately by a
+	period, the system will not properly identify the word and add the
+	task.
+*	The website design is inconsistent across different browsers.  I never
+	got around to working on the CSS, as the rest of the system used up
+	all my development time.  Using a CSS reset framework would, in the
+	future, be in my best interest.
+
+External APIs
+-------------
+
+The system makes use of the JQuery javascript library for both data processing
+and UI elements of the website.  The frameworks can be downloaded at
+http://jquery.com/ and http://jqueryui.com/ websites, respectively.
+
+The JQueryUI API is used by _src/views/admin.erb_ source file.  The JQuery
+library is used by the following source files:
+
+*	_src/views/admin.erb_
+*	_src/public/js/admin.js_
+*	_src/views/chat.erb_
 
 License Information
 -------------------
