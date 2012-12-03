@@ -1,0 +1,18 @@
+<%#
+Author:			Graeme Douglas
+Admin login page. Targets HTML5.
+%>
+<% require './config.rb'%>
+
+<html lang = "en">
+<head>
+<title> <%=CompanyName%> | autosistant Administrator Login</title>
+</head>
+<body>
+<h1> <%=CompanyName%> | autosistant Administrator Login </h1>
+<form action="/autosistant/admin/login" method="post">
+<label>Username</label><input type="text" name="uname">
+<label>Password</label><input type="password" name="pword">
+<input type="submit" value="Login">
+</form>
+</body>
