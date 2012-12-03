@@ -195,8 +195,8 @@ This can be done by executing in a bash shell:
 	ruby setupexample.rb
 
 Finally, the system's administrative login details must be set.  Edit
-the _src/autosistant.rb_ script and set the _:admin _ uname_ and
-_:admin _ pword_ attributes to the desired values for administration login.
+the _src/autosistant.rb_ script and set the _:admin_uname_ and
+_:admin_pword_ attributes to the desired values for administration login.
 Other configuration options can be found in _src/config.rb_.
 
 Once the system has been installed, the system can be executed by executing,
