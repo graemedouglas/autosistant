@@ -29,10 +29,19 @@ else
 end
 ################################################################################
 
+### Admin Settings #############################################################
+set :admin_uname, 'setme'
+set :admin_pword, 'setme'
+set :secret, (0...20).map{65.+(rand(26)).chr}.join
+################################################################################
+
 ### Helpers ####################################################################
 helpers do
 	include Rack::Utils
 	alias_method :h, :escape_html
+	# Admin login inspired by solution at http://ididitmyway.heroku.com/past/2011/2/22/really_simple_authentication_in_sinatra/
+	def admin? ; request.cookies[settings.admin_uname] ==
+							settings.secret ; end
 end
 ################################################################################
 
@@ -236,11 +245,33 @@ end
 
 get '/autosistant/admin' do
 	# TODO: Log-in.
-	erb :admin
+	if admin?
+		erb :admin
+	else
+		erb :alogin
+	end
+end
+
+post '/autosistant/admin/login' do
+	if admin?
+		redirect 'autosistant/admin'
+	elsif	params[:uname] == settings.admin_uname and
+		params[:pword] == settings.admin_pword
+		
+		response.set_cookie(settings.admin_uname,
+				:value => settings.secret,
+				:domain => "",
+				:expires => Time.now + (60*60*24))
+		redirect '/autosistant/admin'
+	else
+		redirect '/autosistant/admin'
+	end
 end
 
 post '/autosistant/admin/ajax' do
-	# TODO: Make sure Loged-in.
+	if !admin?
+		return "{\n\t\"state\":\"-1\"\n}"
+	end
 	# Process changes to the configuration database.
 	changeSet = params[:changeSet]
 	if "phrases" == changeSet
